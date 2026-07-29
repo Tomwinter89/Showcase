@@ -1,0 +1,27 @@
+/* ─── Raised surface classes ────────────────────────────────────────────────
+   Apply these classes to container elements that need physical elevation.
+   All values reference semantic CSS custom properties — trace via :root in
+   globals.css → primitive tokens in tokens.ts.
+
+   Level 1 — hero surfaces: feature cards, floating panels.
+   Level 2 — nested surfaces: secondary drawers, inline cards.             */
+
+.raised-surface {
+  background:    var(--surface-raised1-bg);
+  border:        1px solid var(--surface-raised1-border);
+  border-radius: var(--surface-raised1-radius);
+  box-shadow:
+    inset 0 1px 0 var(--surface-raised1-inset-top),
+    inset 1px 0 0 var(--surface-raised1-inset-left),
+    var(--surface-raised1-shadow);
+}
+
+.raised-surface--2 {
+  background:    var(--surface-raised2-bg);
+  border:        1px solid var(--surface-raised2-border);
+  border-radius: var(--surface-raised2-radius);
+  box-shadow:
+    inset 0 1px 0 var(--surface-raised2-inset-top),
+    inset 1px 0 0 var(--surface-raised2-inset-left),
+    var(--surface-raised2-shadow);
+}

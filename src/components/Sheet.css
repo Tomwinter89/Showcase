@@ -1,0 +1,222 @@
+/* ─── Root overlay — fixed, full viewport ────────────────────────────────── */
+.sheet-root {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: flex-end;    /* bottom sheet default (mobile-first) */
+  justify-content: center;
+}
+
+/* ─── Backdrop ───────────────────────────────────────────────────────────── */
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 7, 8, 0.48);
+  animation: sheet-backdrop-in var(--motion-duration-base) var(--motion-easing-enter) both;
+  cursor: pointer;
+}
+
+.sheet-root.is-closing .sheet-backdrop {
+  animation: sheet-backdrop-out var(--motion-duration-base) var(--motion-easing-exit) both;
+}
+
+/* ─── Panel wrap — size, position, slide animation ───────────────────────── */
+.sheet-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-height: 90dvh;
+  animation: sheet-in-bottom var(--motion-duration-base) var(--motion-easing-enter) both;
+}
+
+.sheet-root.is-closing .sheet-wrap {
+  animation: sheet-out-bottom var(--motion-duration-base) var(--motion-easing-exit) both;
+}
+
+/* ─── Panel ───────────────────────────────────────────────────────────────── */
+.sheet-panel {
+  position: relative;
+  background: var(--surface-raised1-bg);
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  width: 100%;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  cursor: default;
+  /* Inset highlights from the surface system; no ambient shadow (sheet has its own elevation) */
+  box-shadow:
+    inset 0 1px 0 var(--surface-raised1-inset-top),
+    inset 1px 0 0 var(--surface-raised1-inset-left);
+}
+
+/* Mobile drag handle indicator */
+.sheet-panel::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 4px;
+  border-radius: var(--radius-indicator);
+  background: var(--color-muted);
+  pointer-events: none;
+}
+
+/* ─── Stacking: condense the sheet behind a new one ─────────────────────── */
+.sheet-panel.is-condensed {
+  animation: condense-bottom var(--motion-duration-base) var(--motion-easing-standard) forwards;
+}
+.sheet-panel.is-expanded {
+  animation: expand-bottom var(--motion-duration-base) var(--motion-easing-standard) forwards;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-5) var(--space-3);
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sheet-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  margin: 0;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Variant 1's close button — a scrim-variant icon Button (see Button.css),
+   positioned to float top-right over the content with no header bar beneath
+   it. This rule only places it; visual treatment lives entirely in Button. */
+.sheet-close-float {
+  position: absolute;
+  top:      var(--space-4);
+  right:    var(--space-4);
+  z-index:  2;
+}
+
+/* ─── Content ────────────────────────────────────────────────────────────── */
+.sheet-content {
+  --sheet-pad-x:   var(--space-5);
+  --sheet-pad-top: var(--space-5);
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--sheet-pad-top) var(--sheet-pad-x) var(--space-7);
+}
+
+/* ─── Footer — sits outside scroll area, always visible ─────────────────── */
+.sheet-footer {
+  flex-shrink: 0;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  background: var(--surface-raised1-bg);
+}
+
+.sheet-footer .btn-primary {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ─── Keyframes — mobile (bottom sheet) ─────────────────────────────────── */
+@keyframes sheet-backdrop-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+
+@keyframes sheet-in-bottom  { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes sheet-out-bottom { from { transform: translateY(0);    } to { transform: translateY(100%); } }
+
+@keyframes condense-bottom {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-24px) scale(0.95); }
+}
+@keyframes expand-bottom {
+  from { transform: translateY(-24px) scale(0.95); }
+  to   { transform: translateY(0) scale(1); }
+}
+
+/* ─── Keyframes — desktop (right sheet) ─────────────────────────────────── */
+@keyframes sheet-in-right  { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes sheet-out-right { from { transform: translateX(0);    } to { transform: translateX(100%); } }
+
+@keyframes condense-right {
+  from { transform: translateX(0)     scale(1);    }
+  to   { transform: translateX(-20px) translateY(3px) scale(0.95); }
+}
+@keyframes expand-right {
+  from { transform: translateX(-20px) translateY(3px) scale(0.95); }
+  to   { transform: translateX(0)     scale(1);    }
+}
+
+/* ─── Desktop: floating right sheet — 12px from all viewport edges ───────── */
+@media (min-width: 768px) {
+  .sheet-root {
+    align-items: stretch;
+    justify-content: flex-end;
+  }
+
+  /* 12px margin on all sides — sheet floats clear of the viewport edge */
+  .sheet-wrap {
+    width: min(400px, calc(92vw - 24px));
+    margin: 12px;
+    height: calc(100% - 24px);
+    max-height: calc(100% - 24px);
+    animation: sheet-in-right var(--motion-duration-base) var(--motion-easing-enter) both;
+  }
+
+  .sheet-root.is-closing .sheet-wrap {
+    animation: sheet-out-right var(--motion-duration-base) var(--motion-easing-exit) both;
+  }
+
+  /* Rounded corners + clip content to the rounded edges */
+  .sheet-panel {
+    --sheet-radius: var(--radius-panel);
+    height: 100%;
+    max-height: 100%;
+    border-radius: var(--sheet-radius);
+    overflow: hidden;
+  }
+
+  /* No drag handle on desktop */
+  .sheet-panel::before {
+    display: none;
+  }
+
+  .sheet-panel.is-condensed {
+    animation: condense-right var(--motion-duration-base) var(--motion-easing-standard) forwards;
+  }
+  .sheet-panel.is-expanded {
+    animation: expand-right var(--motion-duration-base) var(--motion-easing-standard) forwards;
+  }
+
+  .sheet-header {
+    padding: var(--space-5) var(--space-6) var(--space-3);
+  }
+
+  .sheet-content {
+    --sheet-pad-x:   var(--space-6);
+    --sheet-pad-top: var(--space-4);
+    padding: var(--sheet-pad-top) var(--sheet-pad-x) var(--space-7);
+  }
+
+  .sheet-footer {
+    padding: var(--space-4) var(--space-6);
+  }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .sheet-wrap,
+  .sheet-root.is-closing .sheet-wrap,
+  .sheet-panel.is-condensed,
+  .sheet-panel.is-expanded {
+    animation: none;
+  }
+  .sheet-backdrop      { animation: sheet-backdrop-in  var(--motion-duration-fast) linear both; }
+  .sheet-root.is-closing .sheet-backdrop { animation: sheet-backdrop-out var(--motion-duration-fast) linear both; }
+}

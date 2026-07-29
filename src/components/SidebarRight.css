@@ -1,0 +1,124 @@
+/* Desktop: fixed-width column on the right */
+.sidebar-right {
+  display: none;
+  width: var(--sidebar-width);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Desktop: vertical stack, right-edge aligned */
+.sidebar-right__indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 0;  /* touch target padding (8px above/below each button) provides visual spacing */
+  align-items: flex-end;
+}
+
+/* The button is the full hit target — ::after is the visible line.
+   Width is fixed at 32px (active size) so the hover area is always
+   32px wide; the ::after line right-aligns within it.               */
+.sidebar-right__segment {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 32px;
+  padding-block: 8px;   /* 8px invisible touch target above and below the line */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding-inline: 0;
+}
+
+/* Visual indicator line */
+.sidebar-right__segment::after {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 1px;
+  background-color: var(--color-muted);
+  border-radius: var(--radius-indicator);
+  transition:
+    width            var(--motion-duration-base) var(--motion-easing-standard),
+    height           var(--motion-duration-base) var(--motion-easing-standard),
+    background-color var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+.sidebar-right__segment:hover::after {
+  width: 32px;
+  background-color: var(--color-secondary);
+}
+
+.sidebar-right__segment--active::after {
+  width: 32px;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+/* Keep active colour on hover — don't dim it */
+.sidebar-right__segment--active:hover::after {
+  background-color: var(--color-primary);
+}
+
+/* ─── Mobile: horizontal row at bottom, centred ─────────────────────────── */
+@media (max-width: 767px) {
+  .sidebar-right {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: var(--space-4) 0;
+  }
+
+  .sidebar-right__indicators {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0;
+  }
+
+  /* Mobile: horizontal dots — button is a centred tap target, ::after is the dot/pill */
+  .sidebar-right__segment {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: auto;
+    padding-block: 8px;
+    padding-inline: 8px;
+  }
+
+  /* Inactive: 2×2px dot */
+  .sidebar-right__segment::after {
+    width: 2px;
+    height: 2px;
+    border-radius: var(--radius-indicator);
+    background-color: var(--color-muted);
+    transition:
+      width            var(--motion-duration-base) var(--motion-easing-standard),
+      background-color var(--motion-duration-base) var(--motion-easing-standard);
+  }
+
+  /* Active: 32×2px pill */
+  .sidebar-right__segment--active::after {
+    width: 32px;
+    height: 2px;
+    background-color: var(--color-primary);
+  }
+
+  /* No hover state on mobile — lock inactive and active to their resting values */
+  .sidebar-right__segment:hover::after {
+    width: 2px;
+    background-color: var(--color-muted);
+  }
+
+  .sidebar-right__segment--active:hover::after {
+    width: 32px;
+    background-color: var(--color-primary);
+  }
+}
+
+/* ─── Desktop: visible in column layout ─────────────────────────────────── */
+@media (min-width: 768px) {
+  .sidebar-right {
+    display: flex;
+  }
+}

@@ -1,0 +1,40 @@
+.sidebar-left {
+  display: none;   /* hidden on mobile; shown on desktop via Layout */
+  width: var(--sidebar-width);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-left__title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* When sidebar label doubles as a back-navigation button */
+.sidebar-left__title--link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.sidebar-left__title--link:hover {
+  color: var(--color-accent);
+}
+
+@media (min-width: 768px) {
+  .sidebar-left {
+    display: flex;
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100dvh - var(--header-height));
+    align-self: flex-start;  /* prevents sidebar from stretching with the page */
+  }
+}

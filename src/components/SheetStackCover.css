@@ -1,0 +1,144 @@
+/* ─── Sheet stack cover ──────────────────────────────────────────────────────
+   Decorative animated motif for the Sheet Stacking project cover. One-off
+   artwork — colours, radii and timing are LOCAL custom properties here, kept
+   out of tokens.ts on purpose (they are not design-system values).
+
+   Ported 1:1 from sheet-stack-thumb.html. Fixed px → cqw against a 600px
+   reference frame so the motif scales with the card:
+     40px → 6.667cqw   32px → 5.333cqw   360px → 60cqw   560px → 93.333cqw
+     220px → 36.667cqw  20px → 3.333cqw   410px → 68.333cqw  -46px → -7.667cqw
+     sheet shadow 30/60/-18px → 5/10/-3cqw
+   scale(0.9) is unitless and unchanged. Colours, opacity keyframes, timing
+   percentages and easing all carry over verbatim.                          */
+
+.sheet-stack-cover {
+  container-type: inline-size;   /* cqw below resolves to this element's width */
+  aspect-ratio:   1 / 1;
+  width:          100%;
+}
+
+.ssc-panel {
+  --bg-a:         #7a5bc4;
+  --bg-b:         #35798a;
+  --bg-bloom:     rgba(255, 255, 255, 0.62);
+  --sheet-fill:   #e7e9e8;
+  --scrim-bg-max: 0.48;          /* background — dims once sheet 1 opens, holds until sheet 1 exits */
+  --scrim-2-max:  0.4;           /* sheet 1 — dims once sheet 2 lands, holds until sheet 2 exits */
+  --stack-left:   36.667cqw;     /* shared rest position for both sheets */
+  --stack-top:    3.333cqw;
+  --recede-x:     -7.667cqw;     /* lands sheet 1 exactly left of sheet 2, accounting for the scale */
+  --offstage:     68.333cqw;
+  --radius-panel: 6.667cqw;
+  --radius-sheet: 5.333cqw;
+  --ease:         cubic-bezier(0.22, 1, 0.36, 1);
+  --duration:     6.4s;
+  /* Elevation so the cover sits at the same height as the other project cards. */
+  --elevation:    0 4px 24px rgba(8, 7, 8, 0.10), 0 1px 4px rgba(8, 7, 8, 0.06);
+
+  position:      relative;
+  width:         100%;
+  height:        100%;
+  overflow:      hidden;
+  border-radius: var(--radius-panel);
+  background:    linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 100%);
+  box-shadow:    var(--elevation);
+}
+
+.ssc-panel::before {
+  content:    "";
+  position:   absolute;
+  inset:      0;
+  background: radial-gradient(circle at 30% 44%, var(--bg-bloom), transparent 58%);
+}
+
+.ssc-bg-scrim {
+  position:   absolute;
+  inset:      0;
+  background: #080708;
+  opacity:    0;
+  z-index:    1;
+  animation:  ssc-bg-scrim-cycle var(--duration) var(--ease) infinite;
+}
+
+.ssc-sheet {
+  position:      absolute;
+  left:          var(--stack-left);
+  top:           var(--stack-top);
+  width:         60cqw;
+  height:        93.333cqw;
+  border-radius: var(--radius-sheet);
+  box-shadow:    0 5cqw 10cqw -3cqw rgba(8, 7, 8, 0.4);
+}
+
+.ssc-sheet--back {
+  background: var(--sheet-fill);
+  z-index:    2;
+  animation:  ssc-back-cycle var(--duration) var(--ease) infinite;
+}
+
+.ssc-scrim-2 {
+  position:   absolute;
+  inset:      0;
+  background: #080708;
+  opacity:    0;
+  z-index:    3;
+  animation:  ssc-scrim-2-cycle var(--duration) var(--ease) infinite;
+}
+
+.ssc-sheet--front {
+  background: var(--sheet-fill);
+  z-index:    4;
+  animation:  ssc-front-cycle var(--duration) var(--ease) infinite;
+}
+
+/* 0=idle 6=sheet1 starts 22=sheet1 arrived 38=hold ends / sheet2+recede start
+   54=sheet2 arrived + sheet1 receded 74=hold ends / sheet2 exit starts
+   82=sheet2 gone / sheet1 un-condense starts 90=sheet1 back to full size
+   98=sheet1 gone 100=idle (loops to 0) */
+
+@keyframes ssc-bg-scrim-cycle {
+  0%   { opacity: 0; }
+  6%   { opacity: 0; }
+  22%  { opacity: var(--scrim-bg-max); }
+  90%  { opacity: var(--scrim-bg-max); }
+  98%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes ssc-back-cycle {
+  0%   { transform: translate(var(--offstage), 0) scale(1);   }
+  6%   { transform: translate(var(--offstage), 0) scale(1);   }
+  22%  { transform: translate(0, 0) scale(1);                 }
+  38%  { transform: translate(0, 0) scale(1);                 }
+  54%  { transform: translate(var(--recede-x), 0) scale(0.9); }
+  74%  { transform: translate(var(--recede-x), 0) scale(0.9); }
+  90%  { transform: translate(0, 0) scale(1);                 } /* un-condenses IN SYNC with sheet 2's exit below */
+  98%  { transform: translate(var(--offstage), 0) scale(1);   } /* then slides out on its own */
+  100% { transform: translate(var(--offstage), 0) scale(1);   }
+}
+
+@keyframes ssc-scrim-2-cycle {
+  0%   { opacity: 0; }
+  38%  { opacity: 0; }
+  54%  { opacity: var(--scrim-2-max); }
+  74%  { opacity: var(--scrim-2-max); } /* stays up through the whole hold, no early clear */
+  90%  { opacity: 0; }                  /* clears in sync with sheet 2's exit */
+  100% { opacity: 0; }
+}
+
+@keyframes ssc-front-cycle {
+  0%   { transform: translate(var(--offstage), 0); }
+  38%  { transform: translate(var(--offstage), 0); } /* same start point as sheet 1's recede — no delay */
+  54%  { transform: translate(0, 0);               }
+  74%  { transform: translate(0, 0);               }
+  90%  { transform: translate(var(--offstage), 0); } /* exits IN SYNC with sheet 1's un-condense above */
+  100% { transform: translate(var(--offstage), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ssc-bg-scrim { animation: none; opacity: var(--scrim-bg-max); }
+  .ssc-scrim-2  { animation: none; opacity: var(--scrim-2-max); }
+  .ssc-sheet--back, .ssc-sheet--front { animation: none; }
+  .ssc-sheet--back  { transform: translate(var(--recede-x), 0) scale(0.9); }
+  .ssc-sheet--front { transform: translate(0, 0); }
+}

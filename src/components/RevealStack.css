@@ -1,0 +1,160 @@
+/* ─── Reveal stack ───────────────────────────────────────────────────────────
+   An "up next" queue that fans open on tap. Card/stack heights come from
+   inline styles (single source of truth in RevealStack.tsx); this file owns
+   visual treatment only — semantic vars throughout, no raw design values.
+
+   The header row is plain flow (not part of the stack's coordinate system).
+   Cards inside .reveal-stack__stack are absolutely positioned; their
+   transforms (translateY + scale) are written inline per state and
+   interpolated by the transition here.                                     */
+.reveal-stack {
+  --track-pad: 12px;   /* new token — header→stack gap, card LTRB padding, image/text gap; not on the 0–8 spacing scale */
+
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--track-pad);   /* header row → stack */
+  width:          100%;
+  max-width:      420px;
+}
+
+/* ─── Header row — plain text + chevron, no surface treatment ────────────── */
+.reveal-stack__header-row {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+}
+
+.reveal-stack__title {
+  font-size:   var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color:       var(--color-primary);
+}
+
+/* Chevron button — circle background appears only on hover; icon swap happens
+   via the two stacked icons below, not by rotating this element. */
+.reveal-stack__chevron {
+  position:        relative;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex:            none;
+  width:           var(--space-7);     /* 32px */
+  height:          var(--space-7);
+  border:          none;
+  border-radius:   var(--radius-button);
+  background:      transparent;
+  color:           var(--color-primary);
+  cursor:          pointer;
+  transition:      background var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.reveal-stack__chevron:hover {
+  background: var(--btn-secondary-bg);  /* black-10 */
+}
+
+/* Both icons sit stacked in the same spot; only `.is-visible` is on-screen.
+   Hidden state is scaled down + blurred — the swap reads as a quick pop
+   rather than a crossfade. --motion-duration-fast is the fastest token, so
+   the whole exchange stays snappy at 150ms. */
+.reveal-stack__chevron-icon {
+  position:       absolute;
+  opacity:        0;
+  transform:      scale(0.5);
+  filter:         blur(4px);
+  pointer-events: none;
+  transition:
+    opacity   var(--motion-duration-fast) var(--motion-easing-standard),
+    transform var(--motion-duration-fast) var(--motion-easing-standard),
+    filter    var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.reveal-stack__chevron-icon.is-visible {
+  opacity:   1;
+  transform: scale(1);
+  filter:    blur(0);
+}
+
+/* ─── Stack — holds the absolutely positioned track cards ────────────────── */
+.reveal-stack__stack {
+  position:   relative;
+  width:      100%;
+  transition: height var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+/* Track row. transform-origin top-centre nests the collapsed scale cascade
+   (narrower, centred) and anchors the fan-out. */
+.reveal-stack__card {
+  position:         absolute;
+  top:              0;
+  left:             0;
+  right:            0;
+  display:          flex;
+  align-items:      center;
+  gap:              var(--track-pad);
+  padding:          var(--track-pad);
+  background:        var(--surface-raised1-bg);
+  border:            1px solid var(--surface-raised1-border);
+  border-radius:     var(--radius-row);
+  box-shadow:
+    inset 0 1px 0 var(--surface-raised1-inset-top),
+    inset 1px 0 0 var(--surface-raised1-inset-left),
+    var(--surface-raised1-shadow);
+  transform-origin: top center;
+  transition:       transform var(--motion-duration-base) var(--motion-easing-spring);
+  will-change:      transform;
+}
+
+/* Placeholder thumbnail — 32×32 grey square (real artwork is out of scope). */
+.reveal-stack__thumb {
+  flex:          none;
+  width:         var(--space-7);       /* 32px */
+  height:        var(--space-7);
+  border-radius: var(--radius-inset);
+  background:    var(--color-muted);
+}
+
+.reveal-stack__text {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-1);
+  min-width:      0;                    /* lets title/artist truncate */
+}
+
+.reveal-stack__track-title {
+  font-size:     var(--font-size-sm);
+  font-weight:   var(--font-weight-semibold);
+  color:         var(--color-primary);
+  line-height:   var(--line-height-snug);
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+.reveal-stack__artist {
+  font-size:     var(--font-size-sm);
+  font-weight:   var(--font-weight-regular);
+  color:         var(--color-secondary);
+  line-height:   var(--line-height-snug);
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+/* Reduced motion — state still toggles, but rows jump rather than animate. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-stack__stack,
+  .reveal-stack__card,
+  .reveal-stack__chevron,
+  .reveal-stack__chevron-icon {
+    transition: none;
+  }
+}
+
+/* ─── Feature-page demo frame ────────────────────────────────────────────────
+   Centres the stack; flex-start so the row doesn't jump as the height grows.  */
+.reveal-stack-demo {
+  display:         flex;
+  align-items:     flex-start;
+  justify-content: center;
+  padding:         var(--space-8) var(--space-6);
+}

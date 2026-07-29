@@ -1,0 +1,204 @@
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  height: var(--btn-primary-height);
+  padding: 0 var(--btn-primary-padding-x);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border: none;
+  outline: 1px solid var(--btn-primary-outline);
+  outline-offset: 0;
+  border-radius: var(--btn-primary-radius);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow:
+    inset 0 1px 0 var(--btn-primary-inset-top),
+    inset 0 -1px 0 var(--btn-primary-inset-bottom),
+    var(--btn-primary-shadow);
+  transition:
+    transform     var(--motion-duration-fast) var(--motion-easing-spring),
+    box-shadow    var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.btn-primary:hover {
+  box-shadow:
+    inset 0 1px 0 var(--btn-primary-hover-inset-top),
+    inset 0 -1px 0 var(--btn-primary-inset-bottom),
+    var(--btn-primary-hover-shadow);
+}
+
+.btn-primary:active {
+  box-shadow:
+    inset 0 2px 0 var(--btn-primary-inset-bottom),
+    var(--btn-primary-active-shadow),
+    var(--btn-primary-active-shadow-inset);
+  transform: scale(0.97);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  height: var(--btn-primary-height);
+  padding: 0 var(--btn-primary-padding-x);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border: none;
+  border-radius: var(--btn-primary-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background  var(--motion-duration-fast) var(--motion-easing-standard),
+    transform   var(--motion-duration-fast) var(--motion-easing-spring);
+}
+
+.btn-secondary:hover {
+  background: var(--btn-secondary-hover-bg);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-tertiary {
+  display: inline-flex;
+  align-items: center;
+  height: var(--btn-primary-height);
+  padding: 0 var(--btn-primary-padding-x);
+  background: transparent;
+  color: var(--btn-tertiary-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border: none;
+  border-radius: var(--btn-primary-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background  var(--motion-duration-fast) var(--motion-easing-standard),
+    transform   var(--motion-duration-fast) var(--motion-easing-spring);
+}
+
+.btn-tertiary:hover {
+  background: var(--btn-secondary-bg);  /* black-10 */
+}
+
+.btn-tertiary:active {
+  transform: scale(0.97);
+}
+
+.btn-tertiary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-scrim {
+  display: inline-flex;
+  align-items: center;
+  height: var(--btn-primary-height);
+  padding: 0 var(--btn-primary-padding-x);
+  background: var(--scrim-light-bg);
+  color: var(--btn-scrim-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border: none;
+  border-radius: var(--btn-primary-radius);
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--shadow-button);
+  transition:
+    background  var(--motion-duration-fast) var(--motion-easing-standard),
+    transform   var(--motion-duration-fast) var(--motion-easing-spring);
+}
+
+.btn-scrim:hover {
+  background: var(--btn-scrim-hover-bg);
+}
+
+.btn-scrim:active {
+  transform: scale(0.97);
+}
+
+.btn-scrim:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-destructive {
+  display: inline-flex;
+  align-items: center;
+  height: var(--btn-primary-height);
+  padding: 0 var(--btn-primary-padding-x);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-destructive-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border: none;
+  border-radius: var(--btn-primary-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background  var(--motion-duration-fast) var(--motion-easing-standard),
+    transform   var(--motion-duration-fast) var(--motion-easing-spring);
+}
+
+.btn-destructive:hover {
+  background: var(--btn-secondary-hover-bg);
+}
+
+.btn-destructive:active {
+  transform: scale(0.97);
+}
+
+.btn-destructive:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--sm {
+  height: var(--btn-primary-sm-height);
+}
+
+/* ─── Icon-only modifier ─────────────────────────────────────────────────────
+   Square version of whichever variant/size it's combined with — same height
+   the text button already has (via the variant/.btn--sm classes above), just
+   squared off with no horizontal padding. Fully round via --btn-primary-radius
+   since width == height. Full shadow/inset treatment carries over unchanged
+   from the variant class; this only touches shape. */
+.btn--icon {
+  width:           var(--btn-primary-height);
+  padding:         0;
+  justify-content: center;
+}
+
+.btn--icon.btn--sm {
+  width: var(--btn-primary-sm-height);
+}

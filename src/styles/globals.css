@@ -1,0 +1,266 @@
+/* ─── Font faces ────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'New Title';
+  src: url('/fonts/NewTitle-Regular.woff2') format('woff2'),
+       url('/fonts/NewTitle-Regular.woff')  format('woff');
+  font-weight: 400;
+  font-style:  normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'New Title';
+  src: url('/fonts/NewTitle-Medium.woff2') format('woff2'),
+       url('/fonts/NewTitle-Medium.woff')  format('woff');
+  font-weight: 500;
+  font-style:  normal;
+  font-display: swap;
+}
+
+/* ─── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Design tokens as CSS custom properties ────────────────────────────────
+   Keep these in sync with src/styles/tokens.ts — tokens.ts is the source of
+   truth; this file exposes them to CSS via custom properties.              */
+:root {
+  /* Colours */
+  --color-primary:   #080708;
+  --color-secondary: var(--primitive-black-60);  /* primary at 60% alpha — body copy, labels */
+  --color-neutral:   #E6E8E6;
+  --color-accent:    #0000FF;
+  --color-white:     #FFFFFF;
+  --color-border:    var(--primitive-black-10);  /* card strokes, subtle borders */
+  --color-muted:     var(--primitive-black-30);  /* inactive indicators, disabled states */
+  --color-danger:    #D92D20;                    /* destructive actions — remove, delete */
+
+  /* Typography sizes — rem so user browser font preferences are respected */
+  --font-size-xxs:     0.6875rem;  /* 11px — tooltips, micro-labels */
+  --font-size-xs:      0.8125rem;  /* 13px */
+  --font-size-sm:      0.9375rem;  /* 15px */
+  --font-size-base:    1.0625rem;  /* 17px */
+  --font-size-lg:      1.3125rem;  /* 21px */
+  --font-size-display: 6rem;       /* 96px — New Title display */
+
+  /* Font weights */
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+
+  /* Font families */
+  --font-family:         system-ui, -apple-system, sans-serif;
+  --font-family-display: 'New Title', system-ui, sans-serif;  /* display / hero titles only */
+
+  /* Spacing scale (index 0–8) */
+  --space-0: 0px;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 64px;
+
+  /* Border radius */
+  --radius-indicator:  2px;    /* pagination lines, progress tracks, UI bars */
+  --radius-inset:      4px;    /* inline content boxes — hint panels, callouts, labels */
+  --radius-row:        12px;   /* compact list rows — track rows, playlist items */
+  --radius-tile:       16px;   /* square media tiles — dock items, thumbnail chips */
+  --radius-panel:      20px;   /* sheets, drawers — floating panels */
+  --radius-card-inset: 24px;   /* secondary / nested cards — raised surface level 2 */
+  --radius-card:       32px;   /* primary surfaces — feature cards, raised surface level 1 */
+  --radius-button:     999px;  /* fully-rounded pill buttons */
+
+  /* Line height */
+  --line-height-tight:   1.05;  /* display / hero titles */
+  --line-height-snug:    1.2;   /* subheadings */
+  --line-height-base:    1.4;   /* UI labels and captions */
+  --line-height-relaxed: 1.65;  /* long-form body copy */
+
+  /* Letter spacing */
+  --letter-spacing-tight: -0.02em;  /* large display titles */
+  --letter-spacing-none:  0em;
+  --letter-spacing-wide:  0.08em;   /* small caps, uppercase labels */
+
+  /* Shadows */
+  --shadow-surface: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.06);  /* raised surface drop-shadow */
+  --shadow-button:  0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);  /* button elevation */
+
+  /* Layout */
+  --sidebar-width: 64px;
+  --header-height: 56px;
+  --pagination-height-mobile: 50px;  /* SidebarRight on mobile: 18px segment + 32px padding */
+
+  /* Motion tokens */
+  --motion-duration-fast:   150ms;
+  --motion-duration-base:   280ms;
+  --motion-duration-slow:   500ms;
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-easing-enter:    cubic-bezier(0.0, 0, 0.2, 1);
+  --motion-easing-exit:     cubic-bezier(0.4, 0, 1, 1);
+  --motion-easing-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Primitive tokens ──────────────────────────────────────────────────
+     Raw scale values — referenced by semantic tokens below.
+     Do not use --primitive-* variables directly in component CSS.         */
+
+  /* Color — white alpha */
+  --primitive-white-8:   rgba(255, 255, 255, 0.08);
+  --primitive-white-30:  rgba(255, 255, 255, 0.30);
+  --primitive-white-40:  rgba(255, 255, 255, 0.40);
+  --primitive-white-60:  rgba(255, 255, 255, 0.60);
+  --primitive-white-85:  rgba(255, 255, 255, 0.85);
+
+  /* Color — black alpha (primary #080708 at opacity) */
+  --primitive-black-10:  rgba(8, 7, 8, 0.10);
+  --primitive-black-20:  rgba(8, 7, 8, 0.20);
+  --primitive-black-30:  rgba(8, 7, 8, 0.30);
+  --primitive-black-40:  rgba(8, 7, 8, 0.40);
+  --primitive-black-60:  rgba(8, 7, 8, 0.60);
+
+  /* Color — grey surfaces */
+  --primitive-grey-30:   #FDFDFD;
+  --primitive-grey-50:   #FAFAFA;
+  --primitive-grey-70:   #F5F6F7;
+
+  /* Shadow layers */
+  --primitive-shadow-ambient-sm:       0 2px 12px rgba(0, 0, 0, 0.06);
+  --primitive-shadow-ambient-md:       0 4px 24px rgba(0, 0, 0, 0.08);
+  --primitive-shadow-ambient-dark-md:  0 2px 8px  rgba(0, 0, 0, 0.12);  /* button default — reduced */
+  --primitive-shadow-ambient-dark-lg:  0 4px 12px rgba(0, 0, 0, 0.16);  /* button hover — reduced */
+  --primitive-shadow-contact-sm:       0 1px 3px  rgba(0, 0, 0, 0.04);
+  --primitive-shadow-contact-md:       0 1px 4px  rgba(0, 0, 0, 0.06);
+  --primitive-shadow-contact-dark-md:  0 1px 2px  rgba(0, 0, 0, 0.08);  /* button contact — reduced */
+  --primitive-shadow-pressed:          0 1px 4px  rgba(0, 0, 0, 0.10);  /* reduced */
+  --primitive-shadow-pressed-inset:    inset 0 1px 3px rgba(0, 0, 0, 0.20);  /* reduced */
+
+  /* ─── Semantic tokens — surface ─────────────────────────────────────────
+     Raised surface level 1: hero surfaces — feature cards, panels.
+     Raised surface level 2: nested surfaces — drawers, inline cards.      */
+  --surface-raised1-bg:         var(--primitive-grey-50);
+  --surface-raised1-border:     var(--primitive-white-85);
+  --surface-raised1-inset-top:  var(--color-white);
+  --surface-raised1-inset-left: var(--primitive-white-60);
+  --surface-raised1-radius:     var(--radius-card);
+  --surface-raised1-shadow:     var(--primitive-shadow-ambient-md), var(--primitive-shadow-contact-md);
+
+  --surface-raised2-bg:         var(--primitive-grey-30);
+  --surface-raised2-border:     var(--primitive-white-85);
+  --surface-raised2-inset-top:  var(--color-white);
+  --surface-raised2-inset-left: var(--primitive-white-60);
+  --surface-raised2-radius:     var(--radius-card-inset);
+  --surface-raised2-shadow:     var(--primitive-shadow-ambient-sm), var(--primitive-shadow-contact-sm);
+
+  /* Preview well — flat container that component demos sit inside.
+     Unlike the raised surfaces above it has no border, inset or shadow. */
+  --surface-preview-bg:         var(--primitive-grey-70);
+  --surface-preview-radius:     var(--radius-card);
+
+  /* ─── Semantic tokens — button primary ──────────────────────────────────
+     All button variant styles reference these; zero raw values in Button.css. */
+  --btn-primary-bg:                  var(--color-primary);
+  --btn-primary-color:               var(--color-white);
+  --btn-primary-outline:             var(--primitive-white-8);
+  --btn-primary-inset-top:           var(--primitive-white-30);
+  --btn-primary-inset-bottom:        var(--primitive-black-40);
+  --btn-primary-radius:              var(--radius-button);
+  --btn-primary-height:              40px;
+  --btn-primary-sm-height:           32px;
+  --btn-primary-padding-x:           var(--space-5);   /* 20px horizontal */
+  --btn-primary-shadow:              var(--primitive-shadow-ambient-dark-md), var(--primitive-shadow-contact-dark-md);
+  --btn-primary-hover-inset-top:     var(--primitive-white-40);
+  --btn-primary-hover-shadow:        var(--primitive-shadow-ambient-dark-lg), var(--primitive-shadow-contact-dark-md);
+  --btn-primary-active-shadow:       var(--primitive-shadow-pressed);
+  --btn-primary-active-shadow-inset: var(--primitive-shadow-pressed-inset);
+
+  /* ─── Semantic tokens — button secondary ────────────────────────────────── */
+  --btn-secondary-bg:          var(--primitive-black-10);
+  --btn-secondary-color:       var(--color-primary);
+  --btn-secondary-hover-bg:    var(--primitive-black-20);
+
+  /* ─── Semantic tokens — button tertiary ─────────────────────────────────
+     Transparent at rest; hover reuses --btn-secondary-bg (black-10) rather
+     than a new token, since it's the same value with the same meaning. */
+  --btn-tertiary-color:        var(--color-primary);
+
+  /* Light scrim — backing for controls that float over arbitrary imagery
+     (e.g. a sheet's close button over a hero photo, no title bar beneath it). */
+  --scrim-light-bg:            var(--primitive-white-85);
+
+  /* ─── Semantic tokens — button scrim ─────────────────────────────────────
+     Translucent chip for controls floating over imagery. Rest bg reuses
+     --scrim-light-bg directly rather than a duplicate --btn-scrim-bg token. */
+  --btn-scrim-color:           var(--color-primary);
+  --btn-scrim-hover-bg:        var(--color-white);
+
+  /* ─── Semantic tokens — button destructive ───────────────────────────────
+     Secondary surface with danger-coloured text. Backgrounds reuse the
+     secondary tokens directly — same values, same meaning. */
+  --btn-destructive-color:     var(--color-danger);
+}
+
+/* ─── View Transitions ──────────────────────────────────────────────────────── */
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+}
+
+::view-transition-old(root) {
+  animation: 180ms var(--motion-easing-exit) both vt-fade-out;
+}
+::view-transition-new(root) {
+  animation: 280ms var(--motion-easing-enter) both vt-fade-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* ─── Sheet scroll lock ──────────────────────────────────────────────────────── */
+body.is-sheet-open {
+  overflow: hidden;
+}
+
+/* ─── Base styles ───────────────────────────────────────────────────────────── */
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-primary);
+  background-color: var(--color-neutral);
+  line-height: auto;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  text-transform: uppercase;
+}
+
+/* ─── Focus visible ─────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ─── Links ─────────────────────────────────────────────────────────────────── */
+a {
+  color: inherit;
+  text-decoration: none;
+}

@@ -1,0 +1,48 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ─── Fixed gradient — fades content just below the sticky header ────────── */
+.layout__top-fade {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--color-neutral) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 99;
+}
+
+/* ─── Mobile: single column, sidebar-right goes below centre ────────────── */
+.layout__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;  /* lets scroll container shrink correctly in Firefox */
+}
+
+.layout__centre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;  /* critical: allows flex scroll child to fill without overflow */
+}
+
+/* ─── Desktop: three-column row ─────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .layout__body {
+    flex-direction: row;
+    flex: 1;
+    align-items: stretch;
+  }
+
+  .layout__centre {
+    flex: 1;
+    /* removed: justify-content: center — scroll container must fill the column */
+    overflow: hidden;  /* prevents scroll container from bleeding outside the column */
+    min-height: 0;
+  }
+}

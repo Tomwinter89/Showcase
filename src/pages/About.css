@@ -1,0 +1,85 @@
+.about {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ─── Left column: heading ──────────────────────────────────────────────── */
+.about__left {
+  padding: var(--space-6);
+}
+
+.about__heading {
+  font-family:    var(--font-family-display);
+  font-size:      var(--font-size-display);
+  font-weight:    var(--font-weight-medium);
+  line-height:    var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  color:          var(--color-primary);
+  text-transform: uppercase;
+  margin:         0;
+  text-align: right;
+}
+
+/* ─── Right column: drum container ──────────────────────────────────────── */
+.about__right {
+  display:     flex;
+  align-items: center;
+  /* overflow: visible — drum mask wrapper clips top/bottom via maskImage inline */
+}
+
+/* ─── Drum item text — styles only, layout handled by JS ─────────────────── */
+.about__item {
+  font-size:      var(--font-size-lg);
+  font-weight:    var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-none);
+  color:          var(--color-secondary);
+  text-transform: uppercase;
+  line-height:    var(--line-height-base);
+  cursor:         default;
+  user-select:    none;
+  transition:     color 80ms linear;
+}
+
+.about__item:hover {
+  color: var(--color-primary);
+}
+
+/* ─── Floating hover image (desktop only) ──────────────────────────────── */
+.about__hover-image {
+  display:        none;
+  position:       fixed;
+  pointer-events: none;
+  width:          260px;
+  height:         180px;
+  object-fit:     cover;
+  border-radius:  var(--radius-inset);
+  z-index:        100;
+  transform:      translate(var(--space-5), var(--space-5));
+}
+
+/* ─── Desktop ───────────────────────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .about {
+    flex-direction: row;
+    height:         calc(100dvh - var(--header-height));
+  }
+
+  .about__left {
+    width:           45%;
+    flex-shrink:     0;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    padding:         var(--space-8) var(--space-6);
+  }
+
+  .about__right {
+    flex:       1;
+    min-height: 0;
+  }
+
+  .about__hover-image {
+    display: block;
+  }
+}

@@ -1,0 +1,30 @@
+/* ─── Quantity stepper ───────────────────────────────────────────────────────
+   [−] n [+] pill. The container adopts the secondary button's surface and
+   height; the +/- controls are tertiary icon Buttons nested inside it, so
+   their size, icon scale and hover treatment all come from Button.css.     */
+.qty-stepper {
+  display:       inline-flex;
+  align-items:   center;
+  background:    var(--btn-secondary-bg);
+  border-radius: var(--btn-primary-radius);
+  height:        var(--btn-primary-height);
+  flex:          none;
+}
+
+.qty-stepper--sm {
+  height: var(--btn-primary-sm-height);
+}
+
+/* flex:1 lets the pill stretch when a parent gives it room (e.g. the product
+   sheet footer); min-width stops the pill resizing between 1 and 10. */
+.qty-stepper__value {
+  flex:        1;
+  min-width:   var(--space-6);   /* 24px */
+  text-align:  center;
+  font-family: var(--font-family);
+  font-size:   var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color:       var(--color-primary);
+  line-height: 1;
+  user-select: none;
+}

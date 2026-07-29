@@ -1,0 +1,46 @@
+/* ─── Preview pagination ─────────────────────────────────────────────────────
+   Navigates between variants shown in a feature-page preview well. Same
+   visual treatment as SidebarRight's mobile dots (2×2 inactive / 32×2 active
+   pill) — always horizontal, regardless of viewport.                        */
+.preview-pagination {
+  display:         flex;
+  justify-content:  center;
+  align-items:     flex-end;
+  gap:             0;   /* each button's own padding provides visual spacing */
+}
+
+.preview-pagination__segment {
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  padding:        var(--space-3);   /* 8px hit-target padding around the dot */
+  background:     transparent;
+  border:         none;
+  cursor:         pointer;
+}
+
+.preview-pagination__segment::after {
+  content:       '';
+  display:       block;
+  width:         2px;
+  height:        2px;
+  border-radius: var(--radius-indicator);
+  background:    var(--color-muted);
+  transition:
+    width      var(--motion-duration-base) var(--motion-easing-standard),
+    background var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+.preview-pagination__segment--active::after {
+  width:      32px;
+  height:     2px;
+  background: var(--color-primary);
+}
+
+.preview-pagination__segment:hover::after {
+  background: var(--color-secondary);
+}
+
+.preview-pagination__segment--active:hover::after {
+  background: var(--color-primary);   /* stay locked to active colour on hover */
+}

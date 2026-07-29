@@ -1,0 +1,171 @@
+/* ─── Scroll container ──────────────────────────────────────────────────────
+   Mobile default: horizontal snap (swipe left/right between features)
+   Desktop (768px+): vertical snap (scroll up/down between features)        */
+.playground-scroll {
+  /* Explicit height so the scroll container has a definite dimension.
+     min-height: 100dvh on Layout means flex: 1 can't derive a definite
+     height from ancestors — we set it directly here instead.             */
+  height: calc(100dvh - var(--header-height) - var(--pagination-height-mobile));
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  /* No scroll-snap on mobile — touch events are intercepted by JS and
+     navigation is driven programmatically, same as the desktop wheel
+     handler. CSS snap caused snap-fighting jank during fast swipes.    */
+  scrollbar-width: none;
+}
+
+.playground-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Each slide — one per feature, sized to fill the scroll container ───── */
+.playground-slide {
+  flex: 0 0 100%;  /* full main-axis dimension; cross-axis auto-stretches */
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Desktop overrides ──────────────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .playground-scroll {
+    height: calc(100dvh - var(--header-height));
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    /* No scroll-snap on desktop — wheel events are intercepted by JS and
+       navigation is driven programmatically. CSS snap caused mandatory-snap
+       jank (fighting user momentum). Mobile keeps x-axis snap for touch. */
+  }
+}
+
+/* ─── Entrance animation — mobile: slides in from the right ─────────────── */
+@keyframes feature-enter-x {
+  from { opacity: 0.7; transform: translateX(24px); }
+  to   { opacity: 1;   transform: translateX(0); }
+}
+
+/* ─── Entrance animation — desktop: rises from slightly below ───────────── */
+@keyframes feature-enter-y {
+  from { opacity: 0.7; transform: translateY(24px); }
+  to   { opacity: 1;   transform: translateY(0); }
+}
+
+/* Animation targets .feature (card + footer), NOT the slide wrapper.
+   The slide is full-viewport; scaling it creates unwanted edge gaps.       */
+.playground-slide.is-entering .feature {
+  animation: feature-enter-x
+    var(--motion-duration-slow)
+    var(--motion-easing-enter)
+    both;
+}
+
+@media (min-width: 768px) {
+  .playground-slide.is-entering .feature {
+    animation: feature-enter-y
+      var(--motion-duration-slow)
+      var(--motion-easing-enter)
+      both;
+  }
+}
+
+/* ─── Text rise + blur — text sits 16px low while card animates in, then
+   rises into position after the card lands. Blur unblurs simultaneously.
+   Exit (is-entering removed): blur snaps back to 40px; transform snaps to
+   base (translateY 0) — the 40px blur masks the instant reset.              */
+
+/* Default (off-screen): blurred, transform at natural position */
+.feature__title,
+.feature__subtitle {
+  filter: blur(40px);
+  transition: filter var(--motion-duration-base) var(--motion-easing-exit);
+}
+
+/* Mobile: text trails horizontally after the card slides in */
+@keyframes feature-text-slide {
+  from { transform: translateX(16px); }
+  to   { transform: translateX(0);    }
+}
+
+/* Desktop: text rises vertically after the card settles */
+@keyframes feature-text-rise {
+  from { transform: translateY(16px); }
+  to   { transform: translateY(0);    }
+}
+
+/* Mobile default — title trails in from the right */
+.playground-slide.is-entering .feature__title {
+  filter: blur(0);
+  transition: filter var(--motion-duration-base) var(--motion-easing-enter)
+              var(--motion-duration-fast);  /* blur delay: 150ms */
+  animation: feature-text-slide
+    var(--motion-duration-base)
+    var(--motion-easing-spring)
+    var(--motion-duration-base)       /* 280ms delay — after card lands */
+    both;
+}
+
+/* Mobile default — subtitle trails slightly later */
+.playground-slide.is-entering .feature__subtitle {
+  filter: blur(0);
+  transition: filter var(--motion-duration-base) var(--motion-easing-enter)
+              var(--motion-duration-base);  /* blur delay: 280ms */
+  animation: feature-text-slide
+    var(--motion-duration-base)
+    var(--motion-easing-spring)
+    calc(var(--motion-duration-base) + var(--motion-duration-fast))  /* 430ms delay */
+    both;
+}
+
+/* Desktop override — vertical rise instead */
+@media (min-width: 768px) {
+  .playground-slide.is-entering .feature__title {
+    animation: feature-text-rise
+      var(--motion-duration-base)
+      var(--motion-easing-spring)
+      var(--motion-duration-base)
+      both;
+  }
+
+  .playground-slide.is-entering .feature__subtitle {
+    animation: feature-text-rise
+      var(--motion-duration-base)
+      var(--motion-easing-spring)
+      calc(var(--motion-duration-base) + var(--motion-duration-fast))
+      both;
+  }
+}
+
+/* ─── Reduced motion: replace scale+translate with a simple fade ─────────── */
+@keyframes feature-enter-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playground-slide.is-entering .feature {
+    animation: feature-enter-fade
+      var(--motion-duration-fast)
+      var(--motion-easing-standard)
+      both;
+  }
+
+  /* Replace blur + rise with a simple opacity fade for reduced-motion users */
+  .feature__title,
+  .feature__subtitle {
+    filter: none;
+    opacity: 0;
+    transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
+  }
+
+  .playground-slide.is-entering .feature__title,
+  .playground-slide.is-entering .feature__subtitle {
+    opacity: 1;
+    filter: none;
+    animation: none;  /* cancel the rise animation */
+    transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
+  }
+}

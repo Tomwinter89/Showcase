@@ -1,0 +1,121 @@
+/* ─── Category dock ──────────────────────────────────────────────────────────
+   Cursor-driven magnification row. Item dimensions come from inline styles
+   (single source of truth in CategoryDock.tsx); this file owns visual
+   treatment only — zero raw design values, semantic vars throughout.
+
+   align-items: flex-end + the items' transform-origin: center bottom keeps
+   every item on a shared baseline as it magnifies.                         */
+.category-dock {
+  position:      relative;            /* stacking context for the bar variant's bar + items */
+  display:       flex;
+  align-items:   flex-end;
+  gap:           var(--space-2);      /* 4px — mirrors GAP in the component */
+  padding-top:   var(--space-8);      /* headroom for the tooltip + upward growth */
+  width:         fit-content;
+}
+
+/* Bar variant's shared surface — sits behind every item, exactly as tall as
+   one resting item. Items keep growing upward from their own bottom edge
+   (transform-origin: center bottom), so magnified ones naturally rise above
+   this bar's top edge instead of being clipped by it. z-index:0 plus the
+   per-item z-index set imperatively in JS (>=100) keeps items in front. */
+.category-dock--bar .category-dock__bar {
+  position: absolute;
+  left:     calc(-1 * var(--space-6));   /* 24px wider than the item row on each side */
+  right:    calc(-1 * var(--space-6));
+  bottom:   0;
+  z-index:  0;
+}
+
+/* Per-category wrapper — owns z-index (set imperatively) and the tooltip's
+   positioning context. Never scaled. */
+.category-dock__item {
+  position: relative;
+  flex:     none;
+}
+
+/* The visible tile — raised-surface treatment, tile radius. Owns transform. */
+.category-dock__tile {
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
+  background:        var(--surface-raised1-bg);
+  border:            1px solid var(--surface-raised1-border);
+  border-radius:     var(--radius-tile);
+  box-shadow:
+    inset 0 1px 0 var(--surface-raised1-inset-top),
+    inset 1px 0 0 var(--surface-raised1-inset-left),
+    var(--surface-raised1-shadow);
+  transform:         translateX(0) scale(1);
+  transform-origin:  center bottom;   /* baseline-locked growth */
+  transition:        transform var(--motion-duration-base) var(--motion-easing-spring);
+  will-change:       transform;
+}
+
+/* Category image — 56×56 at rest (set inline); scales with the tile's transform.
+   Source art is square, so `contain` fills the box without cropping. */
+.category-dock__image {
+  display:          block;
+  object-fit:       contain;
+  mix-blend-mode:   multiply;   /* blends the image's white bg into the tile surface */
+  user-select:      none;
+  -webkit-user-drag: none;
+}
+
+/* Bar variant — the image itself IS the dock item, no tile chrome. Same
+   baseline-locked scale/transition treatment as .category-dock__tile above. */
+.category-dock__character {
+  display:           block;
+  object-fit:        contain;
+  transform:         translateX(0) scale(1);
+  transform-origin:  center bottom;   /* baseline-locked growth, peeks above the bar */
+  transition:        transform var(--motion-duration-base) var(--motion-easing-spring);
+  will-change:       transform;
+  user-select:       none;
+  -webkit-user-drag: none;
+}
+
+/* Tooltip pill — hidden by default, revealed imperatively for the hovered tile. */
+.category-dock__tooltip {
+  position:       absolute;
+  bottom:         100%;
+  left:           50%;
+  margin-bottom:  var(--space-3);      /* 8px above the tile */
+  padding:        var(--space-2) var(--space-4);
+  border-radius:  var(--radius-button);
+  background:     var(--color-secondary);
+  color:          var(--color-white);
+  font-family:    var(--font-family);
+  font-size:      var(--font-size-xxs);
+  font-weight:    var(--font-weight-medium);
+  line-height:    var(--line-height-base);
+  white-space:    nowrap;
+  opacity:          0;
+  transform:        translate(-50%, calc(-100% + 3px)) scale(0.95);
+  transform-origin: center bottom;   /* scale grows up from the edge nearest the tile */
+  pointer-events:   none;
+  transition:
+    opacity   var(--motion-duration-fast) var(--motion-easing-standard),
+    transform var(--motion-duration-fast) var(--motion-easing-standard),
+    left      var(--motion-duration-base) var(--motion-easing-spring);
+}
+
+/* Reduced motion — tiles + tooltips render static; the mousemove path is inert. */
+@media (prefers-reduced-motion: reduce) {
+  .category-dock__tile,
+  .category-dock__character,
+  .category-dock__tooltip {
+    transition: none;
+  }
+}
+
+/* ─── Feature-page demo frame ────────────────────────────────────────────────
+   Centres the dock and gives it breathing room within the demo section.
+   overflow-x lets the wide row scroll rather than clip on narrow viewports.   */
+.category-dock-demo {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         var(--space-8) var(--space-6);
+  overflow-x:      auto;
+}

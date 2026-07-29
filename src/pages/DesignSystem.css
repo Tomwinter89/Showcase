@@ -1,0 +1,255 @@
+.ds {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.ds__heading {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ds__meta {
+  font-size: var(--font-size-sm);
+  opacity: 0.55;
+  margin-top: var(--space-2);
+}
+
+.ds__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.ds__section-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-primary);
+  opacity: 0.25;
+}
+
+/* ── Colour swatches ──────────────────────────────────────────────── */
+.ds__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.ds__swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ds__swatch-block {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+}
+
+.ds__swatch-name {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+}
+
+.ds__swatch-hex {
+  font-size: var(--font-size-xs);
+  opacity: 0.55;
+}
+
+/* ── Typography rows ──────────────────────────────────────────────── */
+.ds__type-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.ds__type-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.ds__type-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  opacity: 0.55;
+  padding-top: 4px;
+}
+
+.ds__type-samples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ds__type-font-name {
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-display);
+  font-weight: 500;
+  opacity: 1;
+  color: var(--color-accent);
+  letter-spacing: var(--letter-spacing-none);
+}
+
+/* ── Spacing rows ─────────────────────────────────────────────────── */
+.ds__spacing-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ds__spacing-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ds__spacing-index {
+  font-size: var(--font-size-xs);
+  opacity: 0.55;
+  min-width: 72px;
+}
+
+.ds__spacing-value {
+  font-size: var(--font-size-xs);
+  opacity: 0.55;
+}
+
+/* ── Border Radius blocks ─────────────────────────────────────────── */
+.ds__radius-block {
+  width: 80px;
+  height: 80px;
+  border: 1.5px solid var(--color-primary);
+  opacity: 0.5;
+}
+
+/* ── Motion ───────────────────────────────────────────────────────── */
+.ds__motion-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ds__motion-sublabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  opacity: 0.4;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.ds__motion-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 140px;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.ds__motion-name {
+  font-size: var(--font-size-xs);
+  opacity: 0.55;
+}
+
+.ds__motion-meta {
+  font-size: var(--font-size-xs);
+  opacity: 0.55;
+}
+
+.ds__motion-meta--mono {
+  font-family: monospace;
+  font-size: 0.6875rem;  /* 11px — intentionally below xs token */
+}
+
+/* Duration demo — bar fills left to right, loops */
+@keyframes ds-duration-fill {
+  0%   { width: 0%; }
+  70%  { width: 100%; }
+  100% { width: 100%; }
+}
+
+.ds__duration-track {
+  width: 140px;
+  height: 2px;
+  background-color: var(--color-primary);
+  opacity: 0.12;
+  border-radius: var(--radius-indicator);
+  overflow: hidden;
+  position: relative;
+}
+
+.ds__duration-bar {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-indicator);
+  animation: ds-duration-fill linear infinite;
+  /* animationDuration set inline per token */
+}
+
+/* Easing demo — dot slides across with the specific timing function */
+@keyframes ds-easing-slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(132px); } /* 140px track - 8px dot */
+}
+
+.ds__easing-track {
+  width: 140px;
+  height: 8px;
+  position: relative;
+  overflow: visible;
+}
+
+.ds__easing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: ds-easing-slide infinite alternate;
+  /* animationTimingFunction and animationDuration set inline */
+}
+
+/* ── Primitive colour groups ──────────────────────────────────────── */
+.ds__primitive-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ds__primitive-dark-bg {
+  background: var(--color-primary);
+  padding: var(--space-2);
+  border-radius: var(--radius-inset);
+  display: inline-flex;
+}
+
+/* ── Component demos ──────────────────────────────────────────────── */
+.ds__component-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.ds__component-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.ds__component-label {
+  font-size: var(--font-size-xs);
+  opacity: 0.55;
+}

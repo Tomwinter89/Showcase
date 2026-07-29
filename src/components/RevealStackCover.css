@@ -1,0 +1,130 @@
+/* ─── Reveal stack cover ─────────────────────────────────────────────────────
+   Decorative animated motif for the Reveal Stack project cover. One-off
+   artwork — colours, radii and timing are LOCAL custom properties here, kept
+   out of tokens.ts on purpose (they are not design-system values).
+
+   All lengths are cqw against a 600px reference frame so the motif scales
+   with the card:
+     20px  → 3.333cqw    560px    → 93.333cqw
+     28px  → 4.667cqw    173.333px → 28.889cqw
+
+   COLLAPSED GEOMETRY: each row's bottom edge sits 28px below the row above.
+   Because transform-origin is `top center`, scaling never moves a row's top
+   edge — so the translateY for each row is (targetBottom − height × scale),
+   which is what the row-2 / row-3 offsets below resolve to.
+     row 1  bottom 193.333  scale 1     translateY 0
+     row 2  bottom 221.333  scale 0.9   translateY 45.333px → 7.556cqw
+     row 3  bottom 249.333  scale 0.81  translateY 88.933px → 14.822cqw   */
+
+.reveal-stack-cover {
+  container-type: inline-size;   /* cqw below resolves to this element's width */
+  aspect-ratio:   1 / 1;
+  width:          100%;
+}
+
+.rsc-panel {
+  --bg-base:       #2c2c36;
+  --bloom-violet:  #8b7bd8;
+  --bloom-magenta: #d45bb0;
+  --bloom-deep:    #4a4478;
+  --row-radius:    4cqw;         /* 24px */
+  --panel-radius:  6.667cqw;     /* 40px */
+  --pad:           3.333cqw;     /* 20px */
+  --ease:          var(--motion-easing-standard);
+  --duration:      6s;   /* loop length; the moves themselves run 500ms — see @keyframes */
+  /* Elevation so the cover sits at the same height as the other project cards. */
+  --elevation:     0 4px 24px rgba(8, 7, 8, 0.10), 0 1px 4px rgba(8, 7, 8, 0.06);
+
+  position:      relative;
+  width:         100%;
+  height:        100%;
+  overflow:      hidden;
+  border-radius: var(--panel-radius);
+  box-shadow:    var(--elevation);
+  background:
+    radial-gradient(circle at 10% 65%, var(--bloom-magenta) 0%, transparent 48%),
+    radial-gradient(circle at 6%  22%, var(--bloom-violet)  0%, transparent 45%),
+    radial-gradient(circle at 75% 85%, var(--bloom-deep)    0%, transparent 55%),
+    var(--bg-base);
+}
+
+/* Film grain — inline feTurbulence, no image asset. Sits under the rows
+   (z-index 0) so the white cards stay clean. */
+.rsc-panel::after {
+  content:          "";
+  position:         absolute;
+  inset:            0;
+  z-index:          0;
+  pointer-events:   none;
+  opacity:          0.22;
+  mix-blend-mode:   overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── List rows ──────────────────────────────────────────────────────────── */
+.rsc-row {
+  position:         absolute;
+  left:             var(--pad);
+  top:              var(--pad);
+  width:            93.333cqw;   /* 560px */
+  height:           28.889cqw;   /* 173.333px */
+  border-radius:    var(--row-radius);
+  transform-origin: top center;  /* scaling holds the top edge, centres horizontally */
+  background:       linear-gradient(180deg, #ffffff 0%, #f4f5f6 100%);
+  box-shadow:       0 2cqw 4cqw -1cqw rgba(8, 7, 8, 0.28);
+}
+
+/* Row 1 is the anchor — full size, never animates. */
+.rsc-row--1 {
+  z-index:   3;
+  transform: translateY(0) scale(1);
+}
+
+/* Rows 2 and 3 share one keyframe block, differing only in the collapsed /
+   expanded values they feed it — so their timing can't drift apart and they
+   always settle together. */
+.rsc-row--2 {
+  --collapsed-y: 7.556cqw;
+  --collapsed-s: 0.9;
+  --expanded-y:  32.222cqw;
+
+  z-index:   2;
+  animation: rsc-fan var(--duration) var(--ease) infinite;
+}
+
+.rsc-row--3 {
+  --collapsed-y: 14.822cqw;
+  --collapsed-s: 0.81;
+  --expanded-y:  64.444cqw;
+
+  z-index:   1;
+  animation: rsc-fan var(--duration) var(--ease) infinite;
+}
+
+/* Each move runs 500ms — --motion-duration-slow — which is 8.333% of the 6s
+   loop. (Keyframe offsets can't reference a token, so that figure is baked in
+   here; if the duration changes, recompute as moveDuration ÷ --duration.)
+
+   0–15       hold collapsed   2500ms (incl. the 1600ms tail below)
+   15–23.333  fan out           500ms
+   23.333–65  hold expanded    2500ms
+   65–73.333  nest back         500ms
+   73.333–100 hold collapsed   1600ms                                         */
+@keyframes rsc-fan {
+  0%      { transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s)); }
+  15%     { transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s)); }
+  23.333% { transform: translateY(var(--expanded-y))  scale(1);                  }
+  65%     { transform: translateY(var(--expanded-y))  scale(1);                  }
+  73.333% { transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s)); }
+  100%    { transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s)); }
+}
+
+/* Reduced motion — settle on the collapsed stack, the shape the feature is
+   named for. Same strategy as SheetStackCover: cancel, don't fight. */
+@media (prefers-reduced-motion: reduce) {
+  .rsc-row--2,
+  .rsc-row--3 {
+    animation: none;
+    transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s));
+  }
+}

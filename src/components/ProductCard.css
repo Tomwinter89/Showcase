@@ -1,0 +1,83 @@
+.product-card {
+  background: var(--color-white);
+  border-radius: var(--radius-card-inset);
+  box-shadow: var(--shadow-surface);
+  overflow: hidden;
+  width: 100%;
+  max-width: 340px;
+  transition: box-shadow var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+/* ─── Image area ─────────────────────────────────────────────────────────── */
+.product-card__image {
+  background: #F0EBE3;  /* fallback while image loads */
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.product-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ─── Body ───────────────────────────────────────────────────────────────── */
+.product-card__body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.product-card__price {
+  /* 28px sits between lg (21px) and display (48px) — scoped here as component token */
+  --product-card-price-size: 28px;
+  font-size: var(--product-card-price-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+  margin: 0;
+}
+
+.product-card__name {
+  font-size: var(--font-size-sm);
+  color: var(--color-secondary);
+  line-height: var(--line-height-base);
+  margin: 0;
+}
+
+/* ─── Actions ────────────────────────────────────────────────────────────── */
+.product-card__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+/* Extend Button to be full-width inside card */
+.product-card__actions .btn-primary {
+  width: 100%;
+  justify-content: center;
+}
+
+.product-card__subtle-cta {
+  background: none;
+  border: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-primary);
+  cursor: pointer;
+  text-align: center;
+  padding: var(--space-2) 0;
+  line-height: var(--line-height-base);
+  opacity: 0.55;
+  transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
+}
+
+.product-card__subtle-cta:hover {
+  opacity: 1;
+}
