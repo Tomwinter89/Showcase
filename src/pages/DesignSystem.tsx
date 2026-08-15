@@ -97,18 +97,27 @@ export function DesignSystem() {
                 {def.fontFamily && <span className="ds__type-font-name">New Title</span>}
               </div>
               <div className="ds__type-samples">
-                {Object.entries(def.weights).map(([weightName, weightValue]) => (
-                  <span
-                    key={weightName}
-                    style={{
-                      fontSize: def.size,
-                      fontWeight: weightValue,
-                      ...(def.fontFamily ? { fontFamily: def.fontFamily } : {}),
-                    }}
-                  >
-                    {weightName.charAt(0).toUpperCase() + weightName.slice(1)} — The quick brown fox
-                  </span>
-                ))}
+                {Object.entries(def.weights).map(([weightName, weightValue]) => {
+                  // Any "system*" key (system, systemSemibold, ...) opts OUT
+                  // of the token's fontFamily override — these exist
+                  // specifically to demonstrate this size in the plain
+                  // system sans, alongside New Title (currently xxl uses
+                  // both, matching Bookshelf's numerals and NavMenu's items).
+                  const isSystemVariant = weightName.startsWith('system');
+                  const label = weightName.replace(/([A-Z])/g, ' $1');
+                  return (
+                    <span
+                      key={weightName}
+                      style={{
+                        fontSize: def.size,
+                        fontWeight: weightValue,
+                        ...(def.fontFamily && !isSystemVariant ? { fontFamily: def.fontFamily } : {}),
+                      }}
+                    >
+                      {label.charAt(0).toUpperCase() + label.slice(1)} — The quick brown fox
+                    </span>
+                  );
+                })}
               </div>
             </div>
           ))}

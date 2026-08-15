@@ -4,17 +4,51 @@
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: var(--space-5) var(--space-6);   /* 20px 24px */
   background: var(--color-neutral);
 }
 
+.header__left {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-3);
+}
 
-.header__name {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.01em;
-  color: var(--color-primary);
+.header__logo-link {
+  display: block;
+  line-height: 0;   /* avoids inline-image baseline gap under the link */
+}
+
+.header__logo {
+  display: block;
+  height: 48px;
+  width:  auto;
+}
+
+/* Mirrors SidebarLeft's own menu button — desktop keeps that one (in the
+   side rail); this one is mobile-only. */
+.header__menu-button {
+  display: none;
+}
+
+/* Mirrors NextFeatureArrow — desktop keeps that one (sidebarRight); this
+   one is mobile-only, and only rendered at all on feature pages (see
+   Header.tsx). margin-left:auto pushes it to the far right regardless of
+   whether anything else ever ends up between it and .header__left. */
+.header__next-feature-button {
+  display:    none;
+  margin-left: auto;
+}
+
+@media (max-width: 767px) {
+  .header__logo {
+    height: 32px;
+  }
+
+  .header__menu-button,
+  .header__next-feature-button {
+    display: flex;
+  }
 }
 
 /* Easter egg link: visually hidden until focused via keyboard */

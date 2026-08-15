@@ -7,23 +7,26 @@
   align-items: center;
 }
 
-/* ─── Article ─────────────────────────────────────────────────────────────── */
+/* ─── Article ───────────────────────────────────────────────────────────────
+   Wide enough to hold the 960px preview well; the header and body copy each
+   cap themselves narrower (600px) and centre within it via align-items. */
 .feature-page__article {
-  /* Scoped so the preview well can cancel exactly this much padding. */
-  --article-pad-x: var(--space-6);
-
   width: 100%;
-  max-width: 600px;
-  padding: var(--space-8) var(--article-pad-x) var(--space-6);
+  max-width: 960px;
+  padding-block: var(--space-8) var(--space-6);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-6);
 }
 
 .feature-page__header {
+  width: 100%;
+  max-width: 600px;
+  padding-inline: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);   /* room for the rotated label's lower-left corner */
+  gap: var(--space-4);
 }
 
 .feature-page__label {
@@ -32,12 +35,6 @@
   color: var(--color-secondary);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
-  /* fit-content is load-bearing: rotating a full-width block would swing the
-     far edge tens of px out of place. Hugging the text keeps the arc small. */
-  width: fit-content;
-  transform: rotate(-7deg);
-  transform-origin: left center;
-  margin-block: var(--space-2);   /* headroom for the rotated corners */
 }
 
 .feature-page__title {
@@ -50,6 +47,9 @@
 }
 
 .feature-page__body-wrap {
+  width: 100%;
+  max-width: 600px;
+  padding-inline: var(--space-6);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -80,17 +80,25 @@
 }
 
 /* ─── Preview well ───────────────────────────────────────────────────────────
-   A flat container the component demo sits inside. The negative inline margin
-   cancels the article's horizontal padding so the well spans the full 600px
-   while the body copy stays inset — it reads deliberately wider than the text. */
+   A flat container the component demo sits inside, wider than the article's
+   own body copy so it reads deliberately larger than the text. Some demos
+   supply their own visual chrome (surface, shadows) and opt out of the well
+   entirely via --bare — see BARE_PREVIEW_IDS in FeaturePage.tsx. */
 .feature-page__preview {
-  margin-inline:   calc(-1 * var(--article-pad-x));
+  width:           100%;
+  max-width:       960px;
   min-height:      300px;
   display:         flex;
   align-items:     center;
   justify-content: center;
   background:      var(--surface-preview-bg);
   border-radius:   var(--surface-preview-radius);
+}
+
+.feature-page__preview--bare {
+  min-height:    0;
+  background:    none;
+  border-radius: 0;
 }
 
 /* The demo frame is the well's only child. Let it fill the well so inner
@@ -104,13 +112,16 @@
 /* ─── Mobile ─────────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .feature-page__article {
-    --article-pad-x: var(--space-4);   /* preview bleed follows automatically */
-
-    padding: var(--space-6) var(--article-pad-x) var(--space-5);
+    padding-block: var(--space-6) var(--space-5);
     gap: var(--space-5);
   }
 
+  .feature-page__header,
+  .feature-page__body-wrap {
+    padding-inline: var(--space-4);
+  }
+
   .feature-page__title {
-    font-size: 3rem;  /* 48px on mobile — full 6rem would overflow narrow columns */
+    font-size: 3rem;  /* 48px on mobile — full display size would overflow narrow columns */
   }
 }

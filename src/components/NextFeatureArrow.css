@@ -1,0 +1,19 @@
+/* Mirrors .sidebar-left exactly (width, sticky, centring) so the two rail
+   icons land on the same vertical alignment on opposite sides of the page. */
+.next-feature-arrow {
+  display:     none;   /* hidden on mobile — desktop-only for now, per the request that added this */
+  width:       var(--sidebar-width);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .next-feature-arrow {
+    display:    flex;
+    position:   sticky;
+    top:        var(--header-height);
+    height:     calc(100dvh - var(--header-height));
+    align-self: flex-start;
+  }
+}

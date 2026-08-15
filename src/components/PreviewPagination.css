@@ -1,6 +1,6 @@
 /* ─── Preview pagination ─────────────────────────────────────────────────────
    Navigates between variants shown in a feature-page preview well. Same
-   visual treatment as SidebarRight's mobile dots (2×2 inactive / 32×2 active
+   visual treatment as SidebarRight's mobile dots (3×3 inactive / 24×3 active
    pill) — always horizontal, regardless of viewport.                        */
 .preview-pagination {
   display:         flex;
@@ -22,8 +22,8 @@
 .preview-pagination__segment::after {
   content:       '';
   display:       block;
-  width:         2px;
-  height:        2px;
+  width:         3px;
+  height:        3px;
   border-radius: var(--radius-indicator);
   background:    var(--color-muted);
   transition:
@@ -32,8 +32,8 @@
 }
 
 .preview-pagination__segment--active::after {
-  width:      32px;
-  height:     2px;
+  width:      24px;
+  height:     3px;
   background: var(--color-primary);
 }
 

@@ -1,0 +1,128 @@
+/* ─── Nav menu ────────────────────────────────────────────────────────────────
+   Full-viewport blurred overlay, large staggered nav items. Deliberately
+   inverted from the site's light theme — the dark blur-and-scrim treatment
+   is the point of this style, not a mismatch with the page underneath it.
+
+   Items render at --font-size-xxl (64px) on desktop — the same "large
+   numerals, or system sans" token Bookshelf uses, not a coincidence: this is
+   the system-sans use case that token's "system"/"systemSemibold" weights
+   were added for. Mobile drops to --font-size-xl (32px, see below). */
+.nav-menu {
+  position: fixed;
+  inset:    0;
+  z-index:  400;
+}
+
+.nav-menu__backdrop {
+  position:   absolute;
+  inset:      0;
+  background: rgba(8, 7, 8, 0.7);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter:         blur(20px);
+  cursor:     pointer;
+  animation:  nav-menu-backdrop-in var(--motion-duration-base) var(--motion-easing-enter) both;
+}
+
+.nav-menu.is-closing .nav-menu__backdrop {
+  animation: nav-menu-backdrop-out var(--motion-duration-base) var(--motion-easing-exit) both;
+}
+
+.nav-menu__list {
+  position:  fixed;
+  left:      calc(var(--sidebar-width) + var(--space-6));
+  top:       50%;
+  transform: translateY(-50%);
+  z-index:   1;
+  display:   flex;
+  flex-direction: column;
+  gap:       var(--space-2);
+  outline:   none;
+}
+
+.nav-menu__item {
+  background:  none;
+  border:      none;
+  padding:     0;
+  text-align:  left;
+  cursor:      pointer;
+  color:       var(--color-white);
+  font-family: var(--font-family);
+  font-size:   var(--font-size-xxl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  text-transform: uppercase;
+  opacity:     0.5;
+  transition:  opacity var(--motion-duration-fast) var(--motion-easing-standard);
+  animation:   nav-menu-item-in var(--motion-duration-base) var(--motion-easing-enter) both;
+}
+
+.nav-menu__item:hover,
+.nav-menu__item:focus-visible {
+  opacity: 1;
+}
+
+.nav-menu__item.is-active {
+  opacity: 1;
+}
+
+.nav-menu.is-closing .nav-menu__item {
+  animation: nav-menu-item-out var(--motion-duration-fast) var(--motion-easing-exit) both;
+}
+
+/* Mobile: same overlay mechanic, smaller text, and the list sits closer to
+   the edge — the desktop inset clears the sidebar rail's own width, but
+   that rail doesn't exist on mobile (the trigger lives in the header
+   instead), so offsetting by it here would leave an unexplained gap.
+   var(--space-6) instead matches the header's own horizontal padding. */
+@media (max-width: 767px) {
+  .nav-menu__list {
+    left: var(--space-6);
+  }
+
+  .nav-menu__item {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* One character per word rendered in Aktura — the rest of the word stays in
+   the item's own system sans. font-weight is forced regardless of
+   .is-active: this subset only ships Regular, so letting .is-active's
+   semibold inherit onto this span would make the browser synthesise a fake
+   bold, distorting stroke detail at this size. */
+.nav-menu__item-accent {
+  font-family:    var(--font-family-aktura);
+  font-weight:    var(--font-weight-regular);
+  letter-spacing: var(--letter-spacing-none);
+}
+
+.nav-menu__item-accent.is-alt {
+  font-feature-settings: "salt" 1;
+}
+
+@keyframes nav-menu-backdrop-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes nav-menu-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* Slight shoot left-to-right on entry, matching in reverse on exit.
+   Opacity in "to"/"from" is deliberately omitted, not just left at 1 —
+   with fill-mode:both, an explicit 1 there would permanently override the
+   item's own resting opacity (0.5 inactive / 1 active) once the animation
+   finishes, flattening every item to fully opaque regardless of active
+   state. Leaving it unset makes the animation fade toward/from whatever
+   that item's real resting opacity is instead of a hard-coded value. */
+@keyframes nav-menu-item-in {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { transform: translateX(0); }
+}
+@keyframes nav-menu-item-out {
+  from { transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-16px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-menu__backdrop,
+  .nav-menu.is-closing .nav-menu__backdrop,
+  .nav-menu__item,
+  .nav-menu.is-closing .nav-menu__item {
+    animation: none;
+  }
+}

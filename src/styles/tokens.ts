@@ -14,14 +14,25 @@ export const tokens = {
     danger:    '#D92D20',             // destructive actions — remove, delete
   },
 
+  // Standard t-shirt scale throughout — xxs through xl are plain system-sans
+  // sizes; xxl and display additionally carry New Title as their primary
+  // fontFamily (with a system-sans alternative documented via the
+  // "system"/"systemSemibold" weight keys, since both sizes see real usage
+  // in the plain UI font too — see Bookshelf/NavMenu).
   typography: {
     xxs:     { size: '0.6875rem', weights: { regular: 400, semibold: 600 } },  // 11px — tooltips, micro-labels
     xs:      { size: '0.8125rem', weights: { regular: 400, semibold: 600 } },  // 13px
     sm:      { size: '0.9375rem', weights: { regular: 400, semibold: 600 } },  // 15px
     base:    { size: '1.0625rem', weights: { regular: 400, semibold: 600 } },  // 17px
     lg:      { size: '1.3125rem', weights: { regular: 400, semibold: 600 } },  // 21px
+    xl:      { size: '2rem',      weights: { regular: 400, semibold: 600 } },  // 32px — mobile nav menu items, medium headings
+    xxl: {
+      size: '4rem',                                                             // 64px
+      weights: { regular: 400, medium: 500, system: 400, systemSemibold: 600 },
+      fontFamily: "'New Title', system-ui, sans-serif",
+    },  // large numerals (Bookshelf), or system sans at 400/600 (NavMenu desktop) — New Title (ITF) is the primary face
     display: {
-      size: '6rem',                                                             // 96px
+      size: '8rem',                                                             // 128px
       weights: { regular: 400, medium: 500 },
       fontFamily: "'New Title', system-ui, sans-serif",
     },  // hero / feature page titles — New Title (ITF)

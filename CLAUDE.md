@@ -26,6 +26,7 @@ Token architecture is **layered**: `tokens.ts` primitive values → `--primitive
 | `--color-secondary` | `rgba(8,7,8,0.6)` primary at 60% alpha — body copy, labels |
 | `--color-border` | `rgba(8,7,8,0.1)` card strokes, subtle borders |
 | `--color-muted` | `rgba(8,7,8,0.3)` inactive indicators |
+| `--color-danger` | `#D92D20` destructive actions — remove, delete |
 | Font sizes | xxs 11px / xs 13px / sm 15px / base 17px / lg 21px / display 96px |
 | Weights | regular 400 / medium 500 / semibold 600 |
 | Spacing | [0,2,4,8,16,20,24,32,64] indexed 0–8 |
@@ -488,12 +489,75 @@ vercel.json                  ← NEW: SPA routing rewrite
 
 ---
 
-## Current status (end of Session 10)
+### Session 11 – 2026-07-26 · Button Family, Sheet Variants, Cart Easter Egg & Reveal Stack Cover
+
+**Goal:** Adopt `lucide-react`; grow Button into a full variant family with an icon-only mode; give Sheet a chrome-free floating variant; rebuild the Sheet Stacking demo into an ecommerce cart easter egg; ship a second animated project cover for Reveal Stack; get the project onto GitHub.
+
+**Completed:**
+
+**Icon library adopted:**
+- `lucide-react` installed (zero runtime deps). Convention going forward: every icon renders at `strokeWidth={1.5}`
+
+**Button family — icon-only mode + 3 new variants (`Button.tsx/css`, `globals.css`):**
+- `icon` prop added as a discriminated-union alternative to `label`: icon-only requires `aria-label`, the two modes are mutually exclusive via `icon?: never` / `label?: never` typing. Branch check must be `props.icon` (truthy) — `'icon' in props` does **not** narrow reliably against a sibling branch that declares the same key as `?: never`
+- Icon-only sizing reuses the *existing* height tokens as width (40px default / 32px sm via `--btn-primary-height` / `-sm-height`) rather than adding new size tokens — square-via-equal-dimensions, still fully round via the existing `--radius-button`
+- Icon glyph size is centralised in Button (24px default / 20px sm) — consumers just pass the icon component reference, never size or stroke it themselves
+- Three new variants: `tertiary` (transparent at rest, `--btn-secondary-bg` black-10 on hover only — reuses the token, no duplicate), `scrim` (translucent `--scrim-light-bg` white-85 chip + `--shadow-button`, for icon buttons that float over imagery), `destructive` (secondary's grey surface + `--color-danger` text)
+- New tokens: `--color-danger` (`#D92D20`), `--btn-tertiary-color`, `--scrim-light-bg` (primitive white-85), `--btn-scrim-color`, `--btn-scrim-hover-bg`, `--btn-destructive-color`
+
+**Real bug found + fixed while touching Button:**
+- `tsc --noEmit` with no `-p` flag was a silent no-op all session — the root `tsconfig.json` has `files: []` and only `references`, so it type-checked nothing. Correct command: `tsc --noEmit -p tsconfig.app.json`
+- Running the real check surfaced a genuine pre-existing bug: `ProductCard.tsx` passed `<Button>View details</Button>` as children, which `Button` never accepted or rendered — that button had been silently blank since it was written. Fixed to `label="View details"`. (`ProductCard` turned out to be otherwise-dead code — `SheetStackingDemo` only ever imported its image constant — left in place pending direction, not deleted)
+
+**Sheet — `variant` prop (`Sheet.tsx/css`):**
+- `variant?: 'header' | 'floating'`, defaults to `'header'` (= prior behaviour, fully backward compatible)
+- `'floating'`: no title bar, no border — close button floats top-right over the content (e.g. over a hero image) using the new `scrim` Button variant. `title` still supplies the dialog's accessible name, via `aria-label` instead of `aria-labelledby` since there's no visible heading to point to
+- Both sheet close buttons (header and floating) migrated onto the shared `Button` — icon-only, Lucide `X`, 1.5 stroke. Bespoke `.sheet-close` / `.sheet-close--floating` CSS deleted entirely; all that remains is `.sheet-close-float`, a 4-line positioning-only rule
+
+**QuantityStepper (`QuantityStepper.tsx/css` — new):**
+- `[−] n [+]` pill — the container adopts the secondary button's surface/height; the two controls are `tertiary` icon Buttons nested inside, so sizing, icons and stroke all inherit from Button rather than being reimplemented
+- Decrementing past 1 emits `0` — callers treat that as "remove this line"
+
+**Sheet Stacking demo — rebuilt as a cart easter egg (`SheetStackingDemo.tsx/css`, `data/cartProducts.ts` — new):**
+- Sheet 1 = cart (5 joke line items — "Assorted Stakeholder Feedback Vague Comments", "Component detacher", etc. — each with bespoke blurb/features/instructions copy), Sheet 2 = product details, stacked on top exactly like the old details/stock pair — now demonstrating a deliberate ecommerce pattern: product info opens as a layer over the cart instead of navigating away from it
+- Single `quantities` state (id → qty) drives both sheets, so the stepper in the cart list and the one in the details sheet always agree. Cart tile price = unit × qty, live; decrementing a line to 0 removes it entirely
+- Details footer swaps on cart membership: in-cart → `Remove` (`destructive` variant) + full-size `QuantityStepper`; removed → single primary `Add to cart`
+- Article copy rewritten around the cart-abandonment rationale for the pattern
+
+**Design System page:**
+- Added swatches for `tertiary`, `scrim` (shown on a dark demo backdrop, since it's designed for imagery rather than the DS page background), `destructive`, and icon-only mode across primary/secondary/tertiary
+
+**RevealStackCover — second animated project cover (`RevealStackCover.tsx/css` — new):**
+- Same architecture as `SheetStackCover`: `container-type: inline-size` + `aspect-ratio 1/1`, all lengths in `cqw` against a 600px reference frame, every colour/radius/timing kept **local** (not in `tokens.ts`)
+- 3 list rows fan open / nest closed on a loop. Row 1 is a fixed anchor; rows 2–3 share one `rsc-fan` keyframe block driven by per-row custom properties (`--collapsed-y/-s`, `--expanded-y`) instead of two near-duplicate blocks — makes "these rows move identically" structural rather than a tuning coincidence
+- Collapsed: 560×173.33px rows, 0.9 / 0.81 scale cascade, 28px peeks. Expanded: all rows 560px, 20px gaps, 20px padding all sides — geometry closes exactly at the 600px reference frame
+- Palette (violet/magenta mesh + inline `feTurbulence` grain) approximated from reference screenshots, adjustable via the local CSS vars on `.rsc-panel`
+- Wired into `Playground.tsx` via `FeaturePreview`'s existing `cover` prop
+
+**Motion tuning on RevealStackCover (three iterations, landed on the third):**
+1. Stagger between rows 2/3 → user asked for them to settle together — fixed at the structural level (one shared keyframe block) rather than just re-timing two separate ones
+2. `--motion-duration-base` (280ms) + standard easing on a 6.4s loop → read as too static (91% of the loop was a held frame), reverted
+3. **Landed:** `--motion-duration-slow` (500ms) each way on `--motion-easing-standard`, 6s total loop, 2.5s held per state. Verified via the Web Animations API (`animation.currentTime`) — reassigning `animation-delay` on an already-running animation does **not** reseek it, a measurement mistake made and caught mid-session. A fourth attempt at `enter`/`exit` easing for a spring feel was also tried and rejected: `animation-timing-function` inside `@keyframes` silently ignores `var()` and falls back to `linear`, and even with literal cubic-beziers neither curve produced overshoot (neither has a control point past 1) — true bounce needs `--motion-easing-spring`
+
+**Project shipped to GitHub:**
+- Initialised as a git repo; `.gitignore` extended to exclude `memory/` and `.claude/settings.local.json` (assistant-local state, not project source) — `.claude/launch.json` kept, it's useful dev-server config for other clones
+- Pushed to `https://github.com/Tomwinter89/Showcase` on `main`
+
+**Key decisions:**
+- `props.icon` truthy check for Button's discriminated union, not `'icon' in props`
+- Icon-only buttons reuse existing height tokens as width rather than adding a parallel size scale
+- `tsc --noEmit -p tsconfig.app.json` is the real typecheck command for this project — bare `tsc --noEmit` silently checks nothing
+- Per-row CSS custom properties feeding one shared `@keyframes` block, not near-duplicate blocks, whenever multiple elements must move in guaranteed lockstep
+- `animation-timing-function` inside `@keyframes` needs literal cubic-bezier values — `var()` fails silently to `linear`
+
+---
+
+## Current status (end of Session 11)
 
 **Completed features:**
-- Sheet Stacking — full article + interactive demo (ProductCard, two stacking sheets, floating desktop presentation, animated project cover)
+- Sheet Stacking — cart easter egg (2 stacked sheets: cart + product details), full article, animated project cover
 - Category Dock — two variants (fruit tiles, character bar) with pagination between them, full article
-- Reveal Stack — "Up next" track queue demo, full article
+- Reveal Stack — "Up next" track queue demo, full article, animated project cover
 
 **Placeholder features (article + demo needed):**
 - Command palette
@@ -503,7 +567,7 @@ vercel.json                  ← NEW: SPA routing rewrite
 - Micro-feedback
 
 **Pages:**
-- `/` — Playground (8 feature cards, scroll/swipe navigation, Sheet Stacking shows its animated cover)
+- `/` — Playground (8 feature cards, scroll/swipe navigation; Sheet Stacking and Reveal Stack both show animated covers)
 - `/feature/:id` — FeaturePage (bleeding preview well + pagination for multi-variant demos, article below)
 - `/about` — About page (drum animation, hover thumbnails)
 - `/design-system` — DS explorer easter egg (Cmd+Shift+D)
@@ -513,31 +577,34 @@ vercel.json                  ← NEW: SPA routing rewrite
 src/
   assets/
     images/
-      fruit/                   ← NEW: Category Dock tile variant
-      characters/              ← NEW: Category Dock bar variant
+      fruit/                   ← Category Dock tile variant
+      characters/              ← Category Dock bar variant
   components/
-    Button.tsx / .css
+    Button.tsx / .css           ← primary/secondary/tertiary/scrim/destructive + icon-only mode
     CategoryDock.tsx / .css     ← tile + bar variants, DockItem[] props
     Header.tsx / .css
     Layout.tsx / .css
-    PreviewPagination.tsx / .css ← NEW: variant-nav dots
-    ProductCard.tsx / .css      ← Sheet Stacking demo
+    PreviewPagination.tsx / .css
+    ProductCard.tsx / .css      ← unused/dead code — SheetStackingDemo only imports its image constant
+    QuantityStepper.tsx / .css  ← NEW: [-] n [+] pill, built on icon Buttons
     RevealStack.tsx / .css      ← "Up next" track queue
-    Sheet.tsx / .css            ← portal-based, focus-trapped
-    SheetStackCover.tsx / .css  ← NEW: animated project cover
-    SheetStackingDemo.tsx / .css
+    RevealStackCover.tsx / .css ← NEW: animated project cover
+    Sheet.tsx / .css            ← `variant`: 'header' | 'floating'
+    SheetStackCover.tsx / .css  ← animated project cover
+    SheetStackingDemo.tsx / .css ← cart easter egg
     SidebarLeft.tsx / .css
     SidebarRight.tsx / .css
-    FeaturePreview.tsx / .css   ← optional `cover` prop
+    FeaturePreview.tsx / .css
   data/
+    cartProducts.ts             ← NEW: 5 joke cart products
     features.ts
   pages/
     About.tsx / .css
     DesignSystem.tsx / .css
-    FeaturePage.tsx / .css      ← preview well, getDemoVariants
+    FeaturePage.tsx / .css
     Playground.tsx / .css
   utils/
-    navigation.ts               ← withViewTransition + navigateWithTransition
+    navigation.ts
   styles/
     tokens.ts
     globals.css
@@ -549,9 +616,9 @@ vercel.json
 
 **Next priorities:**
 - Rewrite the placeholder articles for Category Dock and Reveal Stack (marked `{/* PLACEHOLDER */}`)
-- Apply the new feature-page template's pagination pattern to future multi-variant features as they're built
+- Decide the fate of `ProductCard.tsx` (dead code)
 - Keyboard navigation between features (arrow keys on Playground)
-- Deploy to Vercel
+- Deploy to Vercel (repo is now on GitHub, ready for it)
 
 ---
 

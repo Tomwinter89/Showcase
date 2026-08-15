@@ -1,20 +1,17 @@
+import { Menu } from 'lucide-react';
+import { Button } from './Button';
 import './SidebarLeft.css';
 
 interface SidebarLeftProps {
-  title:    string;
+  /** Feature pages wire this to "go back"; elsewhere it's inert until the
+      real navigation menu it'll eventually open is built. */
   onClick?: () => void;
 }
 
-export function SidebarLeft({ title, onClick }: SidebarLeftProps) {
+export function SidebarLeft({ onClick }: SidebarLeftProps) {
   return (
     <aside className="sidebar-left" aria-label="Section">
-      {onClick ? (
-        <button className="sidebar-left__title sidebar-left__title--link" onClick={onClick}>
-          {title}
-        </button>
-      ) : (
-        <span className="sidebar-left__title">{title}</span>
-      )}
+      <Button variant="tertiary" icon={Menu} aria-label="Menu" onClick={onClick} />
     </aside>
   );
 }

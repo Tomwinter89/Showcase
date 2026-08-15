@@ -5,6 +5,7 @@ import { navigateWithTransition, withViewTransition } from '../utils/navigation'
 import { SheetStackingDemo } from '../components/SheetStackingDemo';
 import { CategoryDock, CHARACTER_ITEMS } from '../components/CategoryDock';
 import { RevealStack } from '../components/RevealStack';
+import { Bookshelf } from '../components/Bookshelf';
 import { PreviewPagination } from '../components/PreviewPagination';
 import './FeaturePage.css';
 
@@ -95,6 +96,32 @@ function RevealStackArticle() {
   );
 }
 
+function BookshelfArticle() {
+  return (
+    <>
+      <p className="feature-page__body">
+        {/* PLACEHOLDER — draft copy, to be rewritten */}
+        A shelf is one of the oldest browsing metaphors there is: a row of
+        spines, each one giving away just enough — title, author — to decide
+        whether it's worth pulling out. Most digital equivalents flatten that
+        down to a grid of thumbnails and lose the browsing feel entirely.
+      </p>
+      <p className="feature-page__body">
+        This keeps the shelf literal. Hover magnifies the spine under your
+        cursor the same way the category dock does, so scanning the row feels
+        tactile rather than static. Tap a spine and it pulls forward into its
+        full cover, pushing its neighbours aside to make room — a small nod
+        to physically sliding a book out for a closer look.
+      </p>
+      <p className="feature-page__hint">
+        <strong>Try it above</strong> — move your cursor across the spines to see them
+        magnify, then tap one to pull it forward into its cover. Tap it again to
+        slide it back onto the shelf.
+      </p>
+    </>
+  );
+}
+
 function PlaceholderArticle({ subtitle }: { subtitle: string }) {
   return <p className="feature-page__body">{subtitle}</p>;
 }
@@ -104,6 +131,7 @@ function getArticleContent(id: string, subtitle: string) {
     case 'sheet-stacking': return <SheetStackingArticle />;
     case 'category-dock':  return <CategoryDockArticle />;
     case 'reveal-stack':   return <RevealStackArticle />;
+    case 'bookshelf':      return <BookshelfArticle />;
     default:               return <PlaceholderArticle subtitle={subtitle} />;
   }
 }
@@ -119,9 +147,18 @@ function getDemoVariants(id: string): React.ReactNode[] {
       <div className="category-dock-demo"><CategoryDock variant="bar" items={CHARACTER_ITEMS} /></div>,
     ];
     case 'reveal-stack':   return [<div className="reveal-stack-demo"><RevealStack /></div>];
+    case 'bookshelf':      return [
+      <div className="bookshelf-demo"><Bookshelf variant="placeholder" /></div>,
+      <div className="bookshelf-demo"><Bookshelf variant="photo" /></div>,
+    ];
     default:               return [];
   }
 }
+
+// Demos that supply their own visual chrome (surface, shadows) and don't
+// need the flat preview well wrapping them too — the well's own background
+// and rounded corners would otherwise clip their shadows.
+const BARE_PREVIEW_IDS = new Set(['bookshelf']);
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export function FeaturePage() {
@@ -154,10 +191,12 @@ export function FeaturePage() {
           <h1 className="feature-page__title">{feature.title}</h1>
         </header>
 
-        {/* Preview well sits above the copy and bleeds past the article's
-            horizontal padding, so it reads wider than the body text. */}
+        {/* Preview well sits above the copy, wider than the body text below it. */}
         {variants.length > 0 && (
-          <section className="feature-page__preview" aria-label="Interactive demo">
+          <section
+            className={`feature-page__preview${BARE_PREVIEW_IDS.has(feature.id) ? ' feature-page__preview--bare' : ''}`}
+            aria-label="Interactive demo"
+          >
             {variants[variantIndex]}
           </section>
         )}

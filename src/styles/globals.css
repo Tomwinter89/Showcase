@@ -1,8 +1,7 @@
 /* ─── Font faces ────────────────────────────────────────────────────────────── */
 @font-face {
   font-family: 'New Title';
-  src: url('/fonts/NewTitle-Regular.woff2') format('woff2'),
-       url('/fonts/NewTitle-Regular.woff')  format('woff');
+  src: url('/fonts/NewTitle-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style:  normal;
   font-display: swap;
@@ -10,11 +9,23 @@
 
 @font-face {
   font-family: 'New Title';
-  src: url('/fonts/NewTitle-Medium.woff2') format('woff2'),
-       url('/fonts/NewTitle-Medium.woff')  format('woff');
+  src: url('/fonts/NewTitle-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style:  normal;
   font-display: swap;
+}
+
+/* Aktura — decorative single-character accents (see NavMenu). Portaled and
+   only mounted on open, so the font isn't needed at first paint: `optional`
+   lets the browser skip the swap cleanly if it can't fetch in time, rather
+   than causing layout shift or a flash of restyled text. Regular weight
+   only — this subset ships no bold cut. */
+@font-face {
+  font-family: 'Aktura';
+  src: url('/fonts/Aktura-Regular-subset.woff2') format('woff2');
+  font-weight: 400;
+  font-style:  normal;
+  font-display: optional;
 }
 
 /* ─── Reset & base ─────────────────────────────────────────────────────────── */
@@ -44,7 +55,9 @@
   --font-size-sm:      0.9375rem;  /* 15px */
   --font-size-base:    1.0625rem;  /* 17px */
   --font-size-lg:      1.3125rem;  /* 21px */
-  --font-size-display: 6rem;       /* 96px — New Title display */
+  --font-size-xl:      2rem;       /* 32px — mobile nav menu items, medium headings */
+  --font-size-xxl:     4rem;       /* 64px — large numerals, standalone stats */
+  --font-size-display: 8rem;       /* 128px — New Title display */
 
   /* Font weights */
   --font-weight-regular:  400;
@@ -53,7 +66,8 @@
 
   /* Font families */
   --font-family:         system-ui, -apple-system, sans-serif;
-  --font-family-display: 'New Title', system-ui, sans-serif;  /* display / hero titles only */
+  --font-family-display: 'New Title', system-ui, sans-serif;  /* display titles, large numerals */
+  --font-family-aktura:  'Aktura', system-ui, sans-serif;     /* decorative single-character accents */
 
   /* Spacing scale (index 0–8) */
   --space-0: 0px;

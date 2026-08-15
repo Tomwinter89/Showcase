@@ -7,8 +7,8 @@ interface PreviewPaginationProps {
 }
 
 /** Dot/pill row navigating between variants of a feature-page preview.
- *  Visual language mirrors SidebarRight's mobile pagination (2×2 dot at
- *  rest, 32×2 pill when active) — same indicator, smaller context. */
+ *  Visual language mirrors SidebarRight's mobile pagination (3×3 dot at
+ *  rest, 24×3 pill when active) — same indicator, smaller context. */
 export function PreviewPagination({ total, current, onNavigate }: PreviewPaginationProps) {
   return (
     <nav className="preview-pagination" aria-label="Preview variants">
