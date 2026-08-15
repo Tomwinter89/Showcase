@@ -37,6 +37,11 @@ import thingImg       from '../assets/images/characters/Thing.png';
  *
  * `prefers-reduced-motion` is read once on mount; when set, applyFrame is a
  * no-op and every item sits at rest — same fallback strategy as the drum.
+ * `(hover: hover)` gets the same treatment: the falloff math is built around
+ * a cursor that can arrive and later leave, which touch has no equivalent
+ * for, so magnification stays off there rather than getting stuck mid-swell
+ * after a tap (touch browsers can fire one synthetic mousemove per tap with
+ * no matching "leave").
  *
  * TWO VARIANTS, same interaction engine:
  * - 'tile'  (default) — each item is a raised square tile with an image
@@ -107,9 +112,11 @@ export function CategoryDock({ variant = 'tile', items = FRUIT_ITEMS }: Category
   const tileRefs         = useRef<(HTMLElement | null)[]>([]);    // owns transform only
   const tooltipRefs      = useRef<(HTMLDivElement | null)[]>([]);
   const reducedMotionRef = useRef(false);
+  const hoverCapableRef  = useRef(true);
 
   useEffect(() => {
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    hoverCapableRef.current  = window.matchMedia('(hover: hover)').matches;
   }, []);
 
   const N = items.length;
@@ -120,7 +127,7 @@ export function CategoryDock({ variant = 'tile', items = FRUIT_ITEMS }: Category
 
   // Imperative frame update — no setState, no re-render. Called from the handlers.
   const applyFrame = (mouseX: number | null) => {
-    if (reducedMotionRef.current) return; // fallback: never magnify
+    if (reducedMotionRef.current || !hoverCapableRef.current) return; // fallback: never magnify
 
     const scales =
       mouseX === null

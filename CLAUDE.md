@@ -624,6 +624,8 @@ vercel.json
 
 ## Future considerations / Nice to have
 
+- **Category Dock mobile/touch polish:** hover-cursor magnification is now disabled outright on touch devices (`(hover: hover)` check, same fallback approach as `prefers-reduced-motion` — see Bookshelf too), which leaves Category Dock as a flat, static row there. Correct as a stopgap, but not a considered mobile experience — worth a real pass at a touch-appropriate interaction (or at least a deliberately tuned static layout) for this component specifically.
+
 - **Design System page — Visual / Code toggle:** Segmented control at the top of the DS page that switches between the current visual swatch view and a code view showing CSS variable names + resolved values (for token sections) or JSX usage examples (for component sections). Recommended approach: token sections show `--var-name → resolved value`; component sections show a short usage snippet. The segmented control itself would be a dogfooding opportunity.
 
 - **Primitive colours in DS page:** The `tokens.primitive.color` values (white/black/grey alpha scales) are currently invisible in the DS page — only `tokens.colors` is shown. Could add a collapsible "Primitive" subsection under Colours for completeness.

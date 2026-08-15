@@ -173,6 +173,11 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
   const containerRef     = useRef<HTMLDivElement>(null);
   const spineRefs         = useRef<(HTMLButtonElement | null)[]>([]);
   const reducedMotionRef = useRef(false);
+  // Touch devices don't have a cursor that can "leave," which the falloff/
+  // gap-guarantee cascade assumes — same reasoning and same fallback as
+  // CategoryDock's hoverCapableRef. Click-to-expand is untouched; only the
+  // hover-magnification transform is gated behind this.
+  const hoverCapableRef  = useRef(true);
   // Absolute clientX from the click that seeds the post-click re-cascade
   // below — deliberately NOT pre-converted to a container-relative delta.
   // .bookshelf isn't scroll-clipped in most layouts; it grows to fit an
@@ -186,6 +191,7 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
 
   useEffect(() => {
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    hoverCapableRef.current  = window.matchMedia('(hover: hover)').matches;
   }, []);
 
   // Switching variants swaps the whole `books` array (different ids) —
@@ -208,7 +214,7 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
   // in place. transitionend on the width property is the actual signal
   // that the layout has stopped moving.
   useEffect(() => {
-    if (reducedMotionRef.current) return;
+    if (reducedMotionRef.current || !hoverCapableRef.current) return;
     const container = containerRef.current;
     if (!container) return;
 
@@ -235,7 +241,7 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
   }, [expandedId]);
 
   const applyFrame = (viewportX: number | null) => {
-    if (reducedMotionRef.current) return;
+    if (reducedMotionRef.current || !hoverCapableRef.current) return;
 
     // restCenters/offsetLeft are content-space (scroll-independent), but
     // viewportX is measured from the container's own visible edge — the two

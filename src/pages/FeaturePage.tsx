@@ -42,6 +42,11 @@ function SheetStackingArticle() {
 }
 
 function CategoryDockArticle() {
+  const [hoverCapable, setHoverCapable] = useState(true);
+  useEffect(() => {
+    setHoverCapable(window.matchMedia('(hover: hover)').matches);
+  }, []);
+
   return (
     <>
       <p className="feature-page__body">
@@ -60,11 +65,18 @@ function CategoryDockArticle() {
         row now responds to you. It's a small, low-stakes moment of delight
         layered onto something that would otherwise just sit there.
       </p>
-      <p className="feature-page__hint">
-        <strong>Try it above</strong> — move your cursor across the tiles and
-        watch them magnify toward the pointer. The gap between tiles holds
-        steady no matter how large they grow.
-      </p>
+      {hoverCapable ? (
+        <p className="feature-page__hint">
+          <strong>Try it above</strong> — move your cursor across the tiles and
+          watch them magnify toward the pointer. The gap between tiles holds
+          steady no matter how large they grow.
+        </p>
+      ) : (
+        <p className="feature-page__hint">
+          <strong>This one's hover-driven, so it doesn't fully translate to touch</strong> —
+          the delight is in the magnification on hover, which needs a cursor to chase.
+        </p>
+      )}
     </>
   );
 }
@@ -97,6 +109,11 @@ function RevealStackArticle() {
 }
 
 function BookshelfArticle() {
+  const [hoverCapable, setHoverCapable] = useState(true);
+  useEffect(() => {
+    setHoverCapable(window.matchMedia('(hover: hover)').matches);
+  }, []);
+
   return (
     <>
       <p className="feature-page__body">
@@ -113,11 +130,18 @@ function BookshelfArticle() {
         full cover, pushing its neighbours aside to make room — a small nod
         to physically sliding a book out for a closer look.
       </p>
-      <p className="feature-page__hint">
-        <strong>Try it above</strong> — move your cursor across the spines to see them
-        magnify, then tap one to pull it forward into its cover. Tap it again to
-        slide it back onto the shelf.
-      </p>
+      {hoverCapable ? (
+        <p className="feature-page__hint">
+          <strong>Try it above</strong> — move your cursor across the spines to see them
+          magnify, then tap one to pull it forward into its cover. Tap it again to
+          slide it back onto the shelf.
+        </p>
+      ) : (
+        <p className="feature-page__hint">
+          <strong>This one's hover-driven, so it doesn't fully translate to touch</strong> —
+          tap still works, but the delight is in the magnification on hover.
+        </p>
+      )}
     </>
   );
 }
