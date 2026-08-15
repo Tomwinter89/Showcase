@@ -75,10 +75,11 @@
 }
 
 /* ─── Stack — holds the absolutely positioned track cards ────────────────── */
+/* Height is fixed to the expanded footprint (set inline from RevealStack.tsx)
+   and never animates — only the cards' own transforms move. */
 .reveal-stack__stack {
-  position:   relative;
-  width:      100%;
-  transition: height var(--motion-duration-base) var(--motion-easing-standard);
+  position: relative;
+  width:    100%;
 }
 
 /* Track row. transform-origin top-centre nests the collapsed scale cascade
@@ -151,10 +152,15 @@
 }
 
 /* ─── Feature-page demo frame ────────────────────────────────────────────────
-   Centres the stack; flex-start so the row doesn't jump as the height grows.  */
+   align-self: flex-start pins this block to the top of the preview well
+   instead of the well's own align-items: center — the well's 300px floor
+   is taller than the stack's fixed footprint, and top-anchoring reads
+   better than centring in the leftover space. align-items: flex-start here
+   is the same choice one level down, for the header row + stack column. */
 .reveal-stack-demo {
   display:         flex;
   align-items:     flex-start;
   justify-content: center;
+  align-self:      flex-start;
   padding:         var(--space-8) var(--space-6);
 }

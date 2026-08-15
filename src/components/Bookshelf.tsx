@@ -74,7 +74,7 @@ const SPINE_W          = 72;    // resting spine width — matches the dock's ti
 const SPINE_H           = 340;   // spine height, constant whether a book is collapsed or expanded
 const EXPANDED_W        = 220;   // width once pulled forward
 const GAP               = 8;     // px between books — mirrors --space-3
-const MAX_SCALE         = 1.15;  // hover magnification peak
+const MAX_SCALE         = 1.1;   // hover magnification peak
 const INFLUENCE_RANGE  = 120;   // px falloff radius around the cursor
 
 // The shelf's own box is taller than a resting spine — the padding this
@@ -173,6 +173,16 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
   const containerRef     = useRef<HTMLDivElement>(null);
   const spineRefs         = useRef<(HTMLButtonElement | null)[]>([]);
   const reducedMotionRef = useRef(false);
+  // Absolute clientX from the click that seeds the post-click re-cascade
+  // below — deliberately NOT pre-converted to a container-relative delta.
+  // .bookshelf isn't scroll-clipped in most layouts; it grows to fit an
+  // expanding book, and .bookshelf-demo's justify-content: center then
+  // re-centres the now-wider shelf, shifting the container's own left edge
+  // by half the width delta. A delta captured against the old edge would be
+  // stale by the time the effect runs; clientX itself never moves, so
+  // converting it fresh (against whatever edge is current then) is the only
+  // value worth caching.
+  const lastClickXRef    = useRef<number | null>(null);
 
   useEffect(() => {
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -183,7 +193,38 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
   // dangling on an id that no longer exists in the active dataset.
   useEffect(() => {
     setExpandedId(null);
+    lastClickXRef.current = null;
   }, [variant]);
+
+  // Re-run the cursor cascade once an expand/collapse's width change has
+  // actually finished — not just committed to the DOM, but visually settled.
+  // .bookshelf isn't width-constrained in most layouts, so it grows/shrinks
+  // to fit the expanding book, and .bookshelf-demo's justify-content: center
+  // then re-centres the whole shelf as that happens — meaning the
+  // container's own left edge drifts smoothly for the full 500ms of the
+  // spine's width transition (--motion-duration-slow), not in one jump.
+  // Sampling it a couple of frames in (the previous approach here) only
+  // ever caught a small fraction of that drift, leaving most of the error
+  // in place. transitionend on the width property is the actual signal
+  // that the layout has stopped moving.
+  useEffect(() => {
+    if (reducedMotionRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    const recompute = () => {
+      const clientX = lastClickXRef.current;
+      const viewportX = clientX === null ? null : clientX - container.getBoundingClientRect().left;
+      applyFrame(viewportX);
+    };
+
+    const handleTransitionEnd = (e: TransitionEvent) => {
+      if (e.propertyName === 'width') recompute();
+    };
+    container.addEventListener('transitionend', handleTransitionEnd);
+    return () => container.removeEventListener('transitionend', handleTransitionEnd);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expandedId]);
 
   // Bring a newly expanded book into view — it may sit past the visible
   // edge of the row once the shelf grows wider than its frame.
@@ -193,8 +234,19 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
     spineRefs.current[index]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }, [expandedId]);
 
-  const applyFrame = (mouseX: number | null) => {
+  const applyFrame = (viewportX: number | null) => {
     if (reducedMotionRef.current) return;
+
+    // restCenters/offsetLeft are content-space (scroll-independent), but
+    // viewportX is measured from the container's own visible edge — the two
+    // only line up while scrollLeft is 0. Expanding a book can scroll the
+    // shelf (see the scrollIntoView effect below) and collapsing never
+    // scrolls it back, so a mouse that never moves can still end up over a
+    // different book than before purely because the content slid under it.
+    // Re-deriving this on every call (rather than once at click time) also
+    // covers the browser re-clamping scrollLeft mid-collapse as the row
+    // narrows back down.
+    const mouseX = viewportX === null ? null : viewportX + (containerRef.current?.scrollLeft ?? 0);
 
     const expandedIndex = expandedId === null ? -1 : books.findIndex((b) => b.id === expandedId);
 
@@ -274,11 +326,17 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
 
   const handleMouseLeave = () => applyFrame(null);
 
-  const handleClick = (id: string) => {
-    // Entering/switching expanded mode — drop any lingering hover transform
-    // so the width transition isn't fighting a stale scale/translateX.
-    spineRefs.current.forEach((spine) => {
-      if (spine) spine.style.transform = 'translateX(0) scale(1)';
+  const handleClick = (id: string, e: React.MouseEvent<HTMLButtonElement>) => {
+    lastClickXRef.current = e.clientX;
+
+    // Clear every OTHER spine's transform — they're about to be repositioned
+    // by the cascade math and shouldn't carry stale hover state into it. The
+    // clicked spine keeps whatever transform it already had (its current
+    // hover magnification) so it doesn't snap to scale(1) before the effect
+    // above recomputes it against the new layout — it eases there instead,
+    // via the same CSS transition that already drives normal hover moves.
+    spineRefs.current.forEach((spine, i) => {
+      if (spine && books[i].id !== id) spine.style.transform = 'translateX(0) scale(1)';
     });
     setExpandedId((current) => (current === id ? null : id));
   };
@@ -300,7 +358,7 @@ export function Bookshelf({ variant = 'placeholder' }: BookshelfProps) {
             type="button"
             className={`bookshelf__book${isExpanded ? ' is-expanded' : ''}`}
             style={{ width: isExpanded ? EXPANDED_W : SPINE_W }}
-            onClick={() => handleClick(book.id)}
+            onClick={(e) => handleClick(book.id, e)}
             aria-expanded={isExpanded}
           >
             {variant === 'photo' ? (

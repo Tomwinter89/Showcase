@@ -107,7 +107,14 @@
 
   /* Layout */
   --sidebar-width: 64px;
-  --header-height: 56px;
+  /* Matches the header's real rendered height (48px logo + 20px top/bottom
+     padding), not a rounder guessed number — every sticky-offset and
+     height calc across the site subtracts this, so drift here silently
+     pushes content under the header or, on mobile, off the bottom of the
+     viewport (see .playground-scroll). Redefined below for mobile, where
+     the header is shorter logo (32px) but taller content overall once the
+     40px menu button is accounted for. */
+  --header-height: 88px;
   --pagination-height-mobile: 50px;  /* SidebarRight on mobile: 18px segment + 32px padding */
 
   /* Motion tokens */
@@ -216,6 +223,18 @@
      Secondary surface with danger-coloured text. Backgrounds reuse the
      secondary tokens directly — same values, same meaning. */
   --btn-destructive-color:     var(--color-danger);
+}
+
+/* Header is shorter on mobile by logo alone (32px vs 48px), but its menu
+   button (40px, taller than the mobile logo) sets the real floor — net
+   height still doesn't match the desktop value. Redefining the custom
+   property here means every consumer (Layout, Playground, SidebarLeft,
+   FeaturePreview, About, ...) picks up the correct number automatically,
+   rather than needing the same fix duplicated at each call site. */
+@media (max-width: 767px) {
+  :root {
+    --header-height: 80px;
+  }
 }
 
 /* ─── View Transitions ──────────────────────────────────────────────────────── */

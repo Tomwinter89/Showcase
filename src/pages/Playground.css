@@ -4,8 +4,17 @@
 .playground-scroll {
   /* Explicit height so the scroll container has a definite dimension.
      min-height: 100dvh on Layout means flex: 1 can't derive a definite
-     height from ancestors — we set it directly here instead.             */
-  height: calc(100dvh - var(--header-height) - var(--pagination-height-mobile));
+     height from ancestors — we set it directly here instead.
+
+     svh, not dvh: dvh is supposed to track the currently-visible viewport
+     as mobile browser chrome shows/hides, but Chrome on iOS doesn't
+     reliably shrink for its own toolbars, so dvh under-reports how much
+     of that height is actually obscured — the mobile pagination dots
+     below this container were getting pushed under the toolbar as a
+     result. svh always assumes the most chrome visible (the smallest
+     possible viewport), which guarantees the dots stay on-screen at the
+     cost of a little unused space on browsers that behave correctly. */
+  height: calc(100svh - var(--header-height) - var(--pagination-height-mobile));
   display: flex;
   flex-direction: row;
   overflow-x: scroll;

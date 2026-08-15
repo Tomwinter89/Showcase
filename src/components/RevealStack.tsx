@@ -44,9 +44,11 @@ const M = N - 1;             // animated cards — every track after the anchor
 export function RevealStack() {
   const [expanded, setExpanded] = useState(false);
 
-  const stackHeight = expanded
-    ? CARD_H + M * (CARD_H + GAP)   // anchor + fanned cards
-    : CARD_H + PEEK * M;
+  // Always the expanded footprint — cards are absolutely positioned, so the
+  // stack box doesn't need to resize for the collapse/fan visual to read.
+  // Keeping it fixed means collapsing never reflows the header row or the
+  // article copy below it; only the cards themselves move.
+  const stackHeight = CARD_H + M * (CARD_H + GAP);
 
   return (
     <div className="reveal-stack">

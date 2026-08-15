@@ -155,10 +155,22 @@ function getDemoVariants(id: string): React.ReactNode[] {
   }
 }
 
-// Demos that supply their own visual chrome (surface, shadows) and don't
-// need the flat preview well wrapping them too — the well's own background
-// and rounded corners would otherwise clip their shadows.
-const BARE_PREVIEW_IDS = new Set(['bookshelf']);
+// Preview well width per feature. 'compact' (600px) matches the article's
+// own text width; 'wide' (900px) gives richer/multi-variant demos more
+// room; 'bare' removes the well's chrome entirely for demos that supply
+// their own visual surface (its background/rounded corners would otherwise
+// clip Bookshelf's own card shadows). Features not listed here — currently
+// just the still-placeholder ones — default to 'compact'.
+type PreviewSize = 'compact' | 'wide' | 'bare';
+const PREVIEW_SIZE: Record<string, PreviewSize> = {
+  'sheet-stacking': 'compact',
+  'category-dock':  'wide',
+  'reveal-stack':   'wide',
+  'bookshelf':      'bare',
+};
+function getPreviewSize(id: string): PreviewSize {
+  return PREVIEW_SIZE[id] ?? 'compact';
+}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export function FeaturePage() {
@@ -187,14 +199,14 @@ export function FeaturePage() {
       <article className="feature-page__article">
 
         <header className="feature-page__header">
-          <p className="feature-page__label">Interaction pattern</p>
+          <p className="feature-page__label">Interaction</p>
           <h1 className="feature-page__title">{feature.title}</h1>
         </header>
 
         {/* Preview well sits above the copy, wider than the body text below it. */}
         {variants.length > 0 && (
           <section
-            className={`feature-page__preview${BARE_PREVIEW_IDS.has(feature.id) ? ' feature-page__preview--bare' : ''}`}
+            className={`feature-page__preview feature-page__preview--${getPreviewSize(feature.id)}`}
             aria-label="Interactive demo"
           >
             {variants[variantIndex]}

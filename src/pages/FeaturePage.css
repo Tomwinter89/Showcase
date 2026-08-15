@@ -8,11 +8,12 @@
 }
 
 /* ─── Article ───────────────────────────────────────────────────────────────
-   Wide enough to hold the 960px preview well; the header and body copy each
-   cap themselves narrower (600px) and centre within it via align-items. */
+   Wide enough to hold the widest preview well tier (900px); the header and
+   body copy each cap themselves narrower (600px) and centre within it via
+   align-items. */
 .feature-page__article {
   width: 100%;
-  max-width: 960px;
+  max-width: 900px;
   padding-block: var(--space-8) var(--space-6);
   display: flex;
   flex-direction: column;
@@ -27,6 +28,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  text-align: center;
 }
 
 .feature-page__label {
@@ -80,13 +82,12 @@
 }
 
 /* ─── Preview well ───────────────────────────────────────────────────────────
-   A flat container the component demo sits inside, wider than the article's
-   own body copy so it reads deliberately larger than the text. Some demos
-   supply their own visual chrome (surface, shadows) and opt out of the well
-   entirely via --bare — see BARE_PREVIEW_IDS in FeaturePage.tsx. */
+   A flat container the component demo sits inside. Width comes from one of
+   three modifiers (compact/wide/bare — see getPreviewSize in FeaturePage.tsx)
+   rather than a fixed value here, so different demos can read at the scale
+   that actually suits them instead of one universal size. */
 .feature-page__preview {
   width:           100%;
-  max-width:       960px;
   min-height:      300px;
   display:         flex;
   align-items:     center;
@@ -95,6 +96,17 @@
   border-radius:   var(--surface-preview-radius);
 }
 
+.feature-page__preview--compact {
+  max-width: 600px;
+}
+
+.feature-page__preview--wide {
+  max-width: 900px;
+}
+
+/* Bare demos supply their own visual chrome (surface, shadows) — the well's
+   own background/rounded corners would otherwise clip them. No explicit
+   max-width: at width:100% it just fills the article's own 900px cap. */
 .feature-page__preview--bare {
   min-height:    0;
   background:    none;

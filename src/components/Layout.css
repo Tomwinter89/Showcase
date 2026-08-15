@@ -1,7 +1,12 @@
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  /* svh, not dvh — see the comment on .playground-scroll for why. This is
+     just the floor, so the mismatch risk is smaller here, but keeping it
+     consistent avoids .layout wanting to be taller than its own content
+     (header + scroll container + pagination, all now svh-based) actually
+     adds up to. */
+  min-height: 100svh;
 }
 
 /* ─── Fixed gradient — fades content just below the sticky header ────────── */

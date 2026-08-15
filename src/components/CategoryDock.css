@@ -18,13 +18,20 @@
    one resting item. Items keep growing upward from their own bottom edge
    (transform-origin: center bottom), so magnified ones naturally rise above
    this bar's top edge instead of being clipped by it. z-index:0 plus the
-   per-item z-index set imperatively in JS (>=100) keeps items in front. */
+   per-item z-index set imperatively in JS (>=100) keeps items in front.
+
+   Width is written imperatively per-frame from CategoryDock.tsx (tracks the
+   row's current magnified total width, macOS-dock style), centred here via
+   left: 50% + translateX rather than the row's own layout position so it
+   can grow/shrink independently of the (unscaled, layout-only) item flow. */
 .category-dock--bar .category-dock__bar {
-  position: absolute;
-  left:     calc(-1 * var(--space-6));   /* 24px wider than the item row on each side */
-  right:    calc(-1 * var(--space-6));
-  bottom:   0;
-  z-index:  0;
+  position:   absolute;
+  left:       50%;
+  bottom:     0;
+  z-index:    0;
+  transform:  translateX(-50%);
+  transition: width var(--motion-duration-base) var(--motion-easing-spring);
+  will-change: width;
 }
 
 /* Per-category wrapper — owns z-index (set imperatively) and the tooltip's
@@ -104,7 +111,8 @@
 @media (prefers-reduced-motion: reduce) {
   .category-dock__tile,
   .category-dock__character,
-  .category-dock__tooltip {
+  .category-dock__tooltip,
+  .category-dock__bar {
     transition: none;
   }
 }

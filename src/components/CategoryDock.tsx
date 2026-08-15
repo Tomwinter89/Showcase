@@ -59,6 +59,7 @@ const MAX_SCALE       = 1.3;  // magnification at the cursor
 const INFLUENCE_RANGE = 150;  // px falloff radius around the cursor
 const GAP             = 4;    // px between items — mirrors --space-2 / CSS gap
 const HIDDEN_NUDGE    = 3;    // px the tooltip sits lower while hidden (animates up on reveal)
+const BAR_PADDING     = 24;   // px the bar variant's bar reaches past the item row on each side — mirrors --space-6
 
 export interface DockItem {
   name: string;
@@ -101,6 +102,7 @@ export function CategoryDock({ variant = 'tile', items = FRUIT_ITEMS }: Category
   const { width: REST_W, height: REST_H } = GEOMETRY[variant];
 
   const containerRef     = useRef<HTMLDivElement>(null);
+  const barRef           = useRef<HTMLDivElement>(null);          // bar variant only — owns width
   const wrapperRefs      = useRef<(HTMLDivElement | null)[]>([]); // z-index + tooltip context
   const tileRefs         = useRef<(HTMLElement | null)[]>([]);    // owns transform only
   const tooltipRefs      = useRef<(HTMLDivElement | null)[]>([]);
@@ -131,6 +133,10 @@ export function CategoryDock({ variant = 'tile', items = FRUIT_ITEMS }: Category
     const widths     = scales.map((s) => REST_W * s);
     const totalWidth = widths.reduce((sum, w) => sum + w, 0) + (N - 1) * GAP;
     const startLeft  = (REST_TOTAL_WIDTH - totalWidth) / 2;
+
+    // Bar variant: the shared surface tracks the row's current magnified
+    // width, same as a real macOS dock's pill swelling under the cursor.
+    if (barRef.current) barRef.current.style.width = `${totalWidth + BAR_PADDING * 2}px`;
 
     // Single "hovered" item — highest scale wins; every other tooltip stays hidden.
     let hoveredIndex = -1;
@@ -183,8 +189,9 @@ export function CategoryDock({ variant = 'tile', items = FRUIT_ITEMS }: Category
     >
       {variant === 'bar' && (
         <div
+          ref={barRef}
           className="category-dock__bar raised-surface"
-          style={{ height: REST_H }}
+          style={{ height: REST_H, width: REST_TOTAL_WIDTH + BAR_PADDING * 2 }}
           aria-hidden="true"
         />
       )}
