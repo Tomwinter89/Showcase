@@ -5,6 +5,8 @@ A curated gallery of polished, interactive UI components ("Digital playground").
 Each component is showcased as a full-viewport card; click to expand, click out to close.  
 There is a hidden Design System explorer page accessible via Tab focus or Cmd+Shift+D.
 
+**Backlog:** running to-do list lives in `TODO.md` at the repo root — check it for outstanding work, add to it as new ideas come up rather than leaving them only in conversation.
+
 ## Tech stack
 - Vite 6 + React 18 + TypeScript
 - Plain CSS + CSS custom properties (no external UI libraries)
@@ -47,7 +49,6 @@ src/
     Button.tsx / .css          ← primary pill button; uses --btn-primary-* semantic vars
     Header.tsx / .css
     Layout.tsx / .css
-    ProductCard.tsx / .css     ← part of Sheet Stacking demo
     Sheet.tsx / .css           ← portal-based, focus-trapped, depth-registered
     SheetStackingDemo.tsx / .css
     SidebarLeft.tsx / .css
@@ -585,7 +586,6 @@ src/
     Header.tsx / .css
     Layout.tsx / .css
     PreviewPagination.tsx / .css
-    ProductCard.tsx / .css      ← unused/dead code — SheetStackingDemo only imports its image constant
     QuantityStepper.tsx / .css  ← NEW: [-] n [+] pill, built on icon Buttons
     RevealStack.tsx / .css      ← "Up next" track queue
     RevealStackCover.tsx / .css ← NEW: animated project cover
@@ -612,20 +612,7 @@ src/
   App.tsx
   main.tsx
 vercel.json
+TODO.md                        ← running backlog, see below
 ```
 
-**Next priorities:**
-- Rewrite the placeholder articles for Category Dock and Reveal Stack (marked `{/* PLACEHOLDER */}`)
-- Decide the fate of `ProductCard.tsx` (dead code)
-- Keyboard navigation between features (arrow keys on Playground)
-- Deploy to Vercel (repo is now on GitHub, ready for it)
-
----
-
-## Future considerations / Nice to have
-
-- **Category Dock mobile/touch polish:** hover-cursor magnification is now disabled outright on touch devices (`(hover: hover)` check, same fallback approach as `prefers-reduced-motion` — see Bookshelf too), which leaves Category Dock as a flat, static row there. Correct as a stopgap, but not a considered mobile experience — worth a real pass at a touch-appropriate interaction (or at least a deliberately tuned static layout) for this component specifically.
-
-- **Design System page — Visual / Code toggle:** Segmented control at the top of the DS page that switches between the current visual swatch view and a code view showing CSS variable names + resolved values (for token sections) or JSX usage examples (for component sections). Recommended approach: token sections show `--var-name → resolved value`; component sections show a short usage snippet. The segmented control itself would be a dogfooding opportunity.
-
-- **Primitive colours in DS page:** The `tokens.primitive.color` values (white/black/grey alpha scales) are currently invisible in the DS page — only `tokens.colors` is shown. Could add a collapsible "Primitive" subsection under Colours for completeness.
+**Next priorities:** see `TODO.md`.

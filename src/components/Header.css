@@ -14,15 +14,51 @@
   gap:         var(--space-3);
 }
 
+/* Stacking context for the compact title, which sits absolutely over the
+   logo — see Header.tsx for why both stay mounted rather than swapping via
+   conditional rendering. */
+.header__logo-slot {
+  position: relative;
+}
+
 .header__logo-link {
   display: block;
   line-height: 0;   /* avoids inline-image baseline gap under the link */
+  opacity: 1;
+  transition: opacity var(--motion-duration-base) var(--motion-easing-standard);
 }
 
 .header__logo {
   display: block;
   height: 48px;
   width:  auto;
+}
+
+/* Invisible at rest everywhere, including desktop — only the mobile media
+   query below ever adds `.is-visible`, so showCompactTitle has zero visual
+   effect above 768px regardless of what App.tsx passes in. position:
+   absolute keeps it out of flow entirely rather than relying on opacity
+   alone, so a long title can never nudge the logo or push layout around. */
+.header__compact-title {
+  position:       absolute;
+  left:           0;
+  top:            50%;
+  max-width:      200px;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+  white-space:    nowrap;
+  transform:      translateY(-50%) scale(0.92);
+  opacity:        0;
+  pointer-events: none;
+  font-size:      var(--font-size-base);
+  font-weight:    var(--font-weight-semibold);
+  color:          var(--color-primary);
+  letter-spacing: var(--letter-spacing-tight);
+  filter:         blur(4px);
+  transition:
+    opacity   var(--motion-duration-base) var(--motion-easing-standard),
+    transform var(--motion-duration-base) var(--motion-easing-standard),
+    filter    var(--motion-duration-base) var(--motion-easing-standard);
 }
 
 /* Mirrors SidebarLeft's own menu button — desktop keeps that one (in the
@@ -48,6 +84,19 @@
   .header__menu-button,
   .header__next-feature-button {
     display: flex;
+  }
+
+  /* iOS large-title style swap — see FeaturePage.tsx's IntersectionObserver
+     for what actually flips showCompactTitle. */
+  .header__logo-link.is-hidden {
+    opacity:        0;
+    pointer-events: none;
+  }
+
+  .header__compact-title.is-visible {
+    opacity:   1;
+    transform: translateY(-50%) scale(1);
+    filter:    blur(0);
   }
 }
 

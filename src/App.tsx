@@ -19,6 +19,12 @@ export default function App() {
   const navigate  = useNavigate();
   const [currentFeature, setCurrentFeature] = useState(0);
   const [navMenuOpen, setNavMenuOpen] = useState(false);
+  // Whether the current feature page's <h1> is currently visible — reported
+  // up by FeaturePage via IntersectionObserver, consumed by Header to swap
+  // in a compact title once it scrolls under the sticky header (mobile
+  // only, see Header.css). Defaults true so a page always starts with the
+  // logo showing rather than assuming scrolled-past on first paint.
+  const [titleVisible, setTitleVisible] = useState(true);
 
   const isPlayground   = location.pathname === '/';
   const isFeaturePage  = location.pathname.startsWith('/feature/');
@@ -27,6 +33,7 @@ export default function App() {
   // wrapping back to the first after the last.
   const currentFeatureId  = isFeaturePage ? location.pathname.slice('/feature/'.length) : null;
   const currentFeatureIdx = currentFeatureId ? FEATURES.findIndex((f) => f.id === currentFeatureId) : -1;
+  const currentFeatureObj = currentFeatureIdx !== -1 ? FEATURES[currentFeatureIdx] : null;
   const nextFeature       = currentFeatureIdx !== -1 ? FEATURES[(currentFeatureIdx + 1) % FEATURES.length] : null;
 
   const toggleDesignSystem = useCallback(() => {
@@ -64,6 +71,8 @@ export default function App() {
           onLogoClick={() => navigateWithTransition(navigate, '/')}
           onMenuClick={handleMenuClick}
           onNextFeatureClick={handleNextFeature}
+          featureTitle={currentFeatureObj?.title}
+          showCompactTitle={isFeaturePage && !titleVisible}
         />
       }
       sidebarLeft={<SidebarLeft onClick={handleMenuClick} />}
@@ -82,7 +91,7 @@ export default function App() {
       <Routes>
         <Route path="/"              element={<Playground currentIndex={currentFeature} onNavigate={setCurrentFeature} />} />
         <Route path="/design-system" element={<DesignSystem />} />
-        <Route path="/feature/:id"   element={<FeaturePage />} />
+        <Route path="/feature/:id"   element={<FeaturePage onTitleVisibilityChange={setTitleVisible} />} />
         <Route path="/about"         element={<About />} />
       </Routes>
 

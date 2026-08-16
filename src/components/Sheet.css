@@ -22,10 +22,14 @@
 }
 
 /* ─── Panel wrap — size, position, slide animation ───────────────────────── */
+/* Floats 8px clear of the left/right/bottom viewport edges (not the top —
+   this is still a bottom sheet that grows upward with content, not inset
+   on all four sides like the desktop treatment). */
 .sheet-wrap {
   position: relative;
   z-index: 1;
-  width: 100%;
+  width: calc(100% - var(--space-3) * 2);
+  margin-bottom: var(--space-3);
   max-height: 90dvh;
   animation: sheet-in-bottom var(--motion-duration-base) var(--motion-easing-enter) both;
 }
@@ -38,31 +42,21 @@
 .sheet-panel {
   position: relative;
   background: var(--surface-raised1-bg);
-  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  border-radius: var(--radius-panel);
   width: 100%;
   max-height: 90dvh;
   display: flex;
   flex-direction: column;
   outline: none;
   cursor: default;
+  /* Clips edge-bleeding content (e.g. a floating-variant hero image cancelling
+     .sheet-content's own padding) back to the panel's rounded corners — without
+     this, a flush-edge child simply paints over the rounding. */
+  overflow: hidden;
   /* Inset highlights from the surface system; no ambient shadow (sheet has its own elevation) */
   box-shadow:
     inset 0 1px 0 var(--surface-raised1-inset-top),
     inset 1px 0 0 var(--surface-raised1-inset-left);
-}
-
-/* Mobile drag handle indicator */
-.sheet-panel::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 44px;
-  height: 4px;
-  border-radius: var(--radius-indicator);
-  background: var(--color-muted);
-  pointer-events: none;
 }
 
 /* ─── Stacking: condense the sheet behind a new one ─────────────────────── */
@@ -78,7 +72,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-6) var(--space-5) var(--space-3);
+  /* Top padding matches the desktop rule below (--space-5) now — it used to
+     carry an extra --space-6 to clear the mobile drag-handle indicator,
+     which no longer exists, so the title row was sitting off-centre in the
+     header bar with dead space above it and none of that reasoning left. */
+  padding: var(--space-5) var(--space-5) var(--space-3);
   flex-shrink: 0;
   border-bottom: 1px solid var(--color-border);
 }
@@ -131,12 +129,17 @@
 @keyframes sheet-in-bottom  { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes sheet-out-bottom { from { transform: translateY(0);    } to { transform: translateY(100%); } }
 
+/* -40px (not -24px) — scaling toward centre eats most of a flat translateY
+   before it ever reaches the viewport edge (peek = |translateY| - (1-scale)
+   * height / 2), so a modest shift reads as barely any peek at all once a
+   sheet is tall enough to hit max-height: 90dvh. -40px keeps a visible
+   >=16px gap above the stacked sheet across realistic phone heights. */
 @keyframes condense-bottom {
   from { transform: translateY(0) scale(1); }
-  to   { transform: translateY(-24px) scale(0.95); }
+  to   { transform: translateY(-40px) scale(0.95); }
 }
 @keyframes expand-bottom {
-  from { transform: translateY(-24px) scale(0.95); }
+  from { transform: translateY(-40px) scale(0.95); }
   to   { transform: translateY(0) scale(1); }
 }
 
@@ -173,18 +176,11 @@
     animation: sheet-out-right var(--motion-duration-base) var(--motion-easing-exit) both;
   }
 
-  /* Rounded corners + clip content to the rounded edges */
+  /* border-radius is already all-four-corners from the base rule above —
+     mobile floats now too, so there's nothing desktop-specific to add here. */
   .sheet-panel {
-    --sheet-radius: var(--radius-panel);
     height: 100%;
     max-height: 100%;
-    border-radius: var(--sheet-radius);
-    overflow: hidden;
-  }
-
-  /* No drag handle on desktop */
-  .sheet-panel::before {
-    display: none;
   }
 
   .sheet-panel.is-condensed {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FEATURES } from '../data/features';
 import { navigateWithTransition, withViewTransition } from '../utils/navigation';
@@ -196,16 +196,59 @@ function getPreviewSize(id: string): PreviewSize {
   return PREVIEW_SIZE[id] ?? 'compact';
 }
 
+interface FeaturePageProps {
+  /** Reports whether the <h1> below is currently visible — Header (mounted
+      once, above the router) uses this to swap in a compact title once it
+      scrolls out from under the sticky header. Mobile-only in effect (see
+      Header.css), but computed unconditionally here; there's nothing
+      breakpoint-specific about watching the title itself. */
+  onTitleVisibilityChange?: (visible: boolean) => void;
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
-export function FeaturePage() {
+export function FeaturePage({ onTitleVisibilityChange }: FeaturePageProps) {
   const { id }   = useParams<{ id: string }>();
   const navigate = useNavigate();
   const feature  = FEATURES.find(f => f.id === id);
 
   const [variantIndex, setVariantIndex] = useState(0);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   // A route change to a different feature should always land on its first variant.
   useEffect(() => { setVariantIndex(0); }, [id]);
+
+  // React Router doesn't reset scroll position on navigation, and this page
+  // never actually gets its own internal scroll despite .feature-page's
+  // overflow-y: auto — it never overflows its own box, so the browser
+  // window ends up as the real scroll container. Without this, following
+  // "next feature" from partway down one article lands partway down the
+  // next one too — which, now that the header reacts to scroll position,
+  // would show the compact title immediately on a page that was never
+  // actually scrolled by the person looking at it. Must run before the
+  // observer effect below so its initial intersection check already sees
+  // the reset position — both are keyed on `id`, and effects run in
+  // declaration order within the same commit.
+  useEffect(() => { window.scrollTo(0, 0); }, [id]);
+
+  // Header height varies by breakpoint (--header-height), so it's read live
+  // rather than duplicated as a second magic number here — shrinking the
+  // observer's root by exactly that much means "intersecting" lines up with
+  // "not hidden under the sticky header," not just "somewhere on screen."
+  // IntersectionObserver fires once immediately on observe() with the
+  // current state, so this self-corrects on every navigation too, as long
+  // as scroll position itself has already been reset (see above).
+  useEffect(() => {
+    const target = titleRef.current;
+    if (!target || !onTitleVisibilityChange) return;
+
+    const headerHeight = getComputedStyle(document.documentElement).getPropertyValue('--header-height').trim();
+    const observer = new IntersectionObserver(
+      ([entry]) => onTitleVisibilityChange(entry.isIntersecting),
+      { rootMargin: `-${headerHeight} 0px 0px 0px` },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [id, onTitleVisibilityChange]);
 
   if (!feature) {
     navigateWithTransition(navigate, '/');
@@ -224,7 +267,7 @@ export function FeaturePage() {
 
         <header className="feature-page__header">
           <p className="feature-page__label">Interaction</p>
-          <h1 className="feature-page__title">{feature.title}</h1>
+          <h1 className="feature-page__title" ref={titleRef}>{feature.title}</h1>
         </header>
 
         {/* Preview well sits above the copy, wider than the body text below it. */}

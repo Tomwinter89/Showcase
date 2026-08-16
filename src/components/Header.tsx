@@ -15,9 +15,18 @@ interface HeaderProps {
       reasoning as onMenuClick. undefined outside feature pages, where
       there's no "next" to go to. */
   onNextFeatureClick?:    () => void;
+  /** Current feature's title, whenever one exists — stays populated even
+      while showCompactTitle is false, so the crossfade below always has
+      real text to animate rather than a blank span suddenly filling in. */
+  featureTitle?:          string;
+  /** Mobile-only: true once the feature-page <h1> has scrolled out from
+      under the sticky header — swaps the logo for featureTitle in place,
+      iOS-large-title style. Desktop ignores this entirely (see Header.css);
+      SidebarLeft's "Back" label already covers wayfinding there. */
+  showCompactTitle?:      boolean;
 }
 
-export function Header({ onDesignSystemActivate, onLogoClick, onMenuClick, onNextFeatureClick }: HeaderProps) {
+export function Header({ onDesignSystemActivate, onLogoClick, onMenuClick, onNextFeatureClick, featureTitle, showCompactTitle }: HeaderProps) {
   return (
     <header className="header">
       <div className="header__left">
@@ -29,14 +38,31 @@ export function Header({ onDesignSystemActivate, onLogoClick, onMenuClick, onNex
           <Button variant="tertiary" icon={Menu} aria-label="Menu" onClick={onMenuClick} />
         </div>
 
-        <a
-          href="/"
-          className="header__logo-link"
-          onClick={(e) => { e.preventDefault(); onLogoClick(); }}
-          aria-label="Tom Winter — home"
-        >
-          <img src={logo} alt="" className="header__logo" />
-        </a>
+        {/* Logo and compact title occupy the same slot, crossfading between
+            them — mirrors Reveal Stack's chevron icon swap (two elements
+            stay mounted, opacity/scale/blur toggles via .is-visible/
+            .is-hidden) rather than mounting/unmounting either one, which
+            would skip the transition entirely. */}
+        <div className="header__logo-slot">
+          <a
+            href="/"
+            className={`header__logo-link${showCompactTitle ? ' is-hidden' : ''}`}
+            onClick={(e) => { e.preventDefault(); onLogoClick(); }}
+            aria-label="Tom Winter — home"
+          >
+            <img src={logo} alt="" className="header__logo" />
+          </a>
+
+          {/* Decorative — the page's own <h1> already carries the real,
+              announced title; this is a transient scroll-driven visual echo
+              of it, not independent content. */}
+          <span
+            className={`header__compact-title${showCompactTitle ? ' is-visible' : ''}`}
+            aria-hidden="true"
+          >
+            {featureTitle}
+          </span>
+        </div>
       </div>
 
       {onNextFeatureClick && (
