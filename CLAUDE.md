@@ -29,7 +29,7 @@ Token architecture is **layered**: `tokens.ts` primitive values → `--primitive
 | `--color-border` | `rgba(8,7,8,0.1)` card strokes, subtle borders |
 | `--color-muted` | `rgba(8,7,8,0.3)` inactive indicators |
 | `--color-danger` | `#D92D20` destructive actions — remove, delete |
-| Font sizes | xxs 11px / xs 13px / sm 15px / base 17px / lg 21px / display 96px |
+| Font sizes | xxs 11px / xs 13px / sm 15px / base 17px / lg 21px / xl 32px / xxl 64px / xxxl 96px / display 128px |
 | Weights | regular 400 / medium 500 / semibold 600 |
 | Spacing | [0,2,4,8,16,20,24,32,64] indexed 0–8 |
 | Border radius | indicator 2px / inset 4px / row 12px / tile 16px / panel 20px / cardInset 24px / card 32px / button 999px |

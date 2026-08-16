@@ -57,6 +57,7 @@
   --font-size-lg:      1.3125rem;  /* 21px */
   --font-size-xl:      2rem;       /* 32px — mobile nav menu items, medium headings */
   --font-size-xxl:     4rem;       /* 64px — large numerals, standalone stats */
+  --font-size-xxxl:    6rem;       /* 96px — feature-page hero title on mobile */
   --font-size-display: 8rem;       /* 128px — New Title display */
 
   /* Font weights */

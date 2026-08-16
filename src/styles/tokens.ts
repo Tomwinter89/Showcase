@@ -31,6 +31,11 @@ export const tokens = {
       weights: { regular: 400, medium: 500, system: 400, systemSemibold: 600 },
       fontFamily: "'New Title', system-ui, sans-serif",
     },  // large numerals (Bookshelf), or system sans at 400/600 (NavMenu desktop) — New Title (ITF) is the primary face
+    xxxl: {
+      size: '6rem',                                                             // 96px
+      weights: { regular: 400, medium: 500 },
+      fontFamily: "'New Title', system-ui, sans-serif",
+    },  // feature-page hero title on mobile — one step below display's 128px, condensed New Title reads fine at this size on narrow columns
     display: {
       size: '8rem',                                                             // 128px
       weights: { regular: 400, medium: 500 },

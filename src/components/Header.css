@@ -25,7 +25,12 @@
   display: block;
   line-height: 0;   /* avoids inline-image baseline gap under the link */
   opacity: 1;
-  transition: opacity var(--motion-duration-base) var(--motion-easing-standard);
+  /* Delayed so it only starts reappearing once the compact title (below)
+     has fully finished fading out — a sequential swap, not a simultaneous
+     cross-dissolve. Two dissimilar shapes (a logomark vs. a text string)
+     both partway visible at once reads as illegible overlap in a way two
+     matched icons swapping (Reveal Stack's chevron) doesn't. */
+  transition: opacity var(--motion-duration-fast) var(--motion-easing-standard) var(--motion-duration-fast);
 }
 
 .header__logo {
@@ -55,10 +60,12 @@
   color:          var(--color-primary);
   letter-spacing: var(--letter-spacing-tight);
   filter:         blur(4px);
+  /* No delay — fades out immediately when losing .is-visible, so the logo
+     (delayed above) never overlaps it on the way back in. */
   transition:
-    opacity   var(--motion-duration-base) var(--motion-easing-standard),
-    transform var(--motion-duration-base) var(--motion-easing-standard),
-    filter    var(--motion-duration-base) var(--motion-easing-standard);
+    opacity   var(--motion-duration-fast) var(--motion-easing-standard),
+    transform var(--motion-duration-fast) var(--motion-easing-standard),
+    filter    var(--motion-duration-fast) var(--motion-easing-standard);
 }
 
 /* Mirrors SidebarLeft's own menu button — desktop keeps that one (in the
@@ -87,16 +94,24 @@
   }
 
   /* iOS large-title style swap — see FeaturePage.tsx's IntersectionObserver
-     for what actually flips showCompactTitle. */
+     for what actually flips showCompactTitle. Sequential, not simultaneous:
+     the logo fades out with no delay (its own rule, above); the title's
+     fade-in here is delayed by one full fast-duration so it only starts
+     once the logo has actually finished disappearing. */
   .header__logo-link.is-hidden {
     opacity:        0;
     pointer-events: none;
+    transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
   }
 
   .header__compact-title.is-visible {
     opacity:   1;
     transform: translateY(-50%) scale(1);
     filter:    blur(0);
+    transition:
+      opacity   var(--motion-duration-fast) var(--motion-easing-standard) var(--motion-duration-fast),
+      transform var(--motion-duration-fast) var(--motion-easing-standard) var(--motion-duration-fast),
+      filter    var(--motion-duration-fast) var(--motion-easing-standard) var(--motion-duration-fast);
   }
 }
 

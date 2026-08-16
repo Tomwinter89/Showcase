@@ -133,7 +133,25 @@
     padding-inline: var(--space-4);
   }
 
+  /* --font-size-xxxl (96px), not the base rule's --font-size-display
+     (128px) — the condensed typeface reads fine considerably larger than
+     the old 48px override, but full display size overshoots on narrow
+     columns for longer titles. */
   .feature-page__title {
-    font-size: 3rem;  /* 48px on mobile — full display size would overflow narrow columns */
+    font-size: var(--font-size-xxxl);
+  }
+
+  /* The well is already full-bleed on mobile (flush to both edges) — a
+     rounded corner only reads as "a floating card" when there's page
+     visible around it, so at true edge-to-edge width it just looks like a
+     notch cut into the screen. Dropping the radius and fading the fill
+     from the page's own background (--color-neutral) into the well's
+     normal flat fill (--surface-preview-bg) lets it melt into the page at
+     the top instead. Bare demos (Bookshelf) are untouched — already
+     chromeless, nothing here to override. */
+  .feature-page__preview--compact,
+  .feature-page__preview--wide {
+    background:    linear-gradient(180deg, var(--color-neutral) 0%, var(--surface-preview-bg) 100%);
+    border-radius: 0;
   }
 }

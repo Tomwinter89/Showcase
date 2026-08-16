@@ -5,6 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>portfolio</title>
+    <!-- Aktura (NavMenu's decorative accent letters) uses font-display:
+         optional so opening the menu never flashes fallback-then-restyled
+         text — but that means if the tiny subset file isn't already cached
+         by the time the menu opens, the browser commits to the fallback
+         for good on that page load, only picking up Aktura on a later one.
+         Preloading here gives it a head start from first paint regardless
+         of which route was loaded directly, rather than depending on
+         having already visited a page that happens to reference it. -->
+    <link rel="preload" href="/fonts/Aktura-Regular-subset.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <div id="root"></div>
