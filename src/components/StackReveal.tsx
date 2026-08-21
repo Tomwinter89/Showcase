@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import './RevealStack.css';
+import { TRACKS } from '../data/upNextTracks';
+import './StackReveal.css';
 
 /**
- * REVEAL STACK — an "up next" queue that fans open on tap.
+ * STACK REVEAL — an "up next" queue that fans open on tap.
  *
  * The first track is always shown in full beneath the header — it's real
  * content, not a placeholder banner. Collapsed, the remaining tracks nest
@@ -19,18 +20,11 @@ import './RevealStack.css';
  * written inline; CSS interpolates them.
  *
  * Geometry constants below are component layout (px), not design tokens.
+ *
+ * This is the list variant of the feature; StackRevealFan is the second,
+ * overlay-based one — same TRACKS data (see data/upNextTracks.ts), a
+ * completely different presentation.
  */
-
-interface Track {
-  title:  string;
-  artist: string;
-}
-
-const TRACKS: Track[] = [
-  { title: 'Jammin',        artist: 'RUBII' },
-  { title: 'Dedpresidents', artist: 'Knxwledge' },
-  { title: 'Bad Company',   artist: 'Yazmin Lacey' },
-];
 
 const CARD_H         = 56;   // 32px image + 12px padding top/bottom
 const GAP            = 8;    // expanded gap between cards
@@ -41,7 +35,7 @@ const STAGGER        = 40;   // ms per-card animation offset
 const N = TRACKS.length;
 const M = N - 1;             // animated cards — every track after the anchor
 
-export function RevealStack() {
+export function StackReveal() {
   const [expanded, setExpanded] = useState(false);
 
   // Always the expanded footprint — cards are absolutely positioned, so the
@@ -51,12 +45,12 @@ export function RevealStack() {
   const stackHeight = CARD_H + M * (CARD_H + GAP);
 
   return (
-    <div className="reveal-stack">
-      <div className="reveal-stack__header-row">
-        <span className="reveal-stack__title">Up next</span>
+    <div className="stack-reveal">
+      <div className="stack-reveal__header-row">
+        <span className="stack-reveal__title">Up next</span>
         <button
           type="button"
-          className="reveal-stack__chevron"
+          className="stack-reveal__chevron"
           onClick={() => setExpanded((e) => !e)}
           aria-expanded={expanded}
           aria-label={expanded ? 'Collapse up next' : 'Expand up next'}
@@ -64,13 +58,13 @@ export function RevealStack() {
           {/* Both icons stay mounted and cross opacity/scale/blur on toggle —
               a genuine icon swap, not a rotation of one icon. */}
           <ChevronDown
-            className={`reveal-stack__chevron-icon${!expanded ? ' is-visible' : ''}`}
+            className={`stack-reveal__chevron-icon${!expanded ? ' is-visible' : ''}`}
             size={20}
             strokeWidth={1.5}
             aria-hidden="true"
           />
           <ChevronUp
-            className={`reveal-stack__chevron-icon${expanded ? ' is-visible' : ''}`}
+            className={`stack-reveal__chevron-icon${expanded ? ' is-visible' : ''}`}
             size={20}
             strokeWidth={1.5}
             aria-hidden="true"
@@ -78,7 +72,7 @@ export function RevealStack() {
         </button>
       </div>
 
-      <div className="reveal-stack__stack" style={{ height: stackHeight }}>
+      <div className="stack-reveal__stack" style={{ height: stackHeight }}>
         {TRACKS.map((track, i) => {
           const isAnchor = i === 0;
           const j = i - 1; // 0-indexed position among the animated (post-anchor) tracks
@@ -93,7 +87,7 @@ export function RevealStack() {
           return (
             <article
               key={track.title}
-              className="reveal-stack__card"
+              className="stack-reveal__card"
               style={{
                 height:          CARD_H,
                 zIndex:          N - i,               // anchor sits above every card behind it
@@ -101,10 +95,10 @@ export function RevealStack() {
                 transitionDelay: isAnchor ? '0ms' : `${(expanded ? j : M - 1 - j) * STAGGER}ms`,
               }}
             >
-              <div className="reveal-stack__thumb" aria-hidden="true" />
-              <div className="reveal-stack__text">
-                <span className="reveal-stack__track-title">{track.title}</span>
-                <span className="reveal-stack__artist">{track.artist}</span>
+              <div className="stack-reveal__thumb" aria-hidden="true" />
+              <div className="stack-reveal__text">
+                <span className="stack-reveal__track-title">{track.title}</span>
+                <span className="stack-reveal__artist">{track.artist}</span>
               </div>
             </article>
           );

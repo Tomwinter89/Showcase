@@ -558,7 +558,7 @@ vercel.json                  ← NEW: SPA routing rewrite
 **Completed features:**
 - Sheet Stacking — cart easter egg (2 stacked sheets: cart + product details), full article, animated project cover
 - Category Dock — two variants (fruit tiles, character bar) with pagination between them, full article
-- Reveal Stack — "Up next" track queue demo, full article, animated project cover
+- Stack Reveal — "Up next" track queue demo, full article, animated project cover
 
 **Placeholder features (article + demo needed):**
 - Command palette
@@ -568,7 +568,7 @@ vercel.json                  ← NEW: SPA routing rewrite
 - Micro-feedback
 
 **Pages:**
-- `/` — Playground (8 feature cards, scroll/swipe navigation; Sheet Stacking and Reveal Stack both show animated covers)
+- `/` — Playground (8 feature cards, scroll/swipe navigation; Sheet Stacking and Stack Reveal both show animated covers)
 - `/feature/:id` — FeaturePage (bleeding preview well + pagination for multi-variant demos, article below)
 - `/about` — About page (drum animation, hover thumbnails)
 - `/design-system` — DS explorer easter egg (Cmd+Shift+D)
@@ -587,8 +587,8 @@ src/
     Layout.tsx / .css
     PreviewPagination.tsx / .css
     QuantityStepper.tsx / .css  ← NEW: [-] n [+] pill, built on icon Buttons
-    RevealStack.tsx / .css      ← "Up next" track queue
-    RevealStackCover.tsx / .css ← NEW: animated project cover
+    StackReveal.tsx / .css      ← "Up next" track queue
+    StackRevealCover.tsx / .css ← animated project cover
     Sheet.tsx / .css            ← `variant`: 'header' | 'floating'
     SheetStackCover.tsx / .css  ← animated project cover
     SheetStackingDemo.tsx / .css ← cart easter egg

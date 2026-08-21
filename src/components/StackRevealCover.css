@@ -1,5 +1,5 @@
-/* ─── Reveal stack cover ─────────────────────────────────────────────────────
-   Decorative animated motif for the Reveal Stack project cover. One-off
+/* ─── Stack reveal cover ─────────────────────────────────────────────────────
+   Decorative animated motif for the Stack Reveal project cover. One-off
    artwork — colours, radii and timing are LOCAL custom properties here, kept
    out of tokens.ts on purpose (they are not design-system values).
 
@@ -16,13 +16,13 @@
      row 2  bottom 221.333  scale 0.9   translateY 45.333px → 7.556cqw
      row 3  bottom 249.333  scale 0.81  translateY 88.933px → 14.822cqw   */
 
-.reveal-stack-cover {
+.stack-reveal-cover {
   container-type: inline-size;   /* cqw below resolves to this element's width */
   aspect-ratio:   1 / 1;
   width:          100%;
 }
 
-.rsc-panel {
+.strc-panel {
   --bg-base:       #2c2c36;
   --bloom-violet:  #8b7bd8;
   --bloom-magenta: #d45bb0;
@@ -50,7 +50,7 @@
 
 /* Film grain — inline feTurbulence, no image asset. Sits under the rows
    (z-index 0) so the white cards stay clean. */
-.rsc-panel::after {
+.strc-panel::after {
   content:          "";
   position:         absolute;
   inset:            0;
@@ -62,7 +62,7 @@
 }
 
 /* ─── List rows ──────────────────────────────────────────────────────────── */
-.rsc-row {
+.strc-row {
   position:         absolute;
   left:             var(--pad);
   top:              var(--pad);
@@ -75,7 +75,7 @@
 }
 
 /* Row 1 is the anchor — full size, never animates. */
-.rsc-row--1 {
+.strc-row--1 {
   z-index:   3;
   transform: translateY(0) scale(1);
 }
@@ -83,22 +83,22 @@
 /* Rows 2 and 3 share one keyframe block, differing only in the collapsed /
    expanded values they feed it — so their timing can't drift apart and they
    always settle together. */
-.rsc-row--2 {
+.strc-row--2 {
   --collapsed-y: 7.556cqw;
   --collapsed-s: 0.9;
   --expanded-y:  32.222cqw;
 
   z-index:   2;
-  animation: rsc-fan var(--duration) var(--ease) infinite;
+  animation: strc-fan var(--duration) var(--ease) infinite;
 }
 
-.rsc-row--3 {
+.strc-row--3 {
   --collapsed-y: 14.822cqw;
   --collapsed-s: 0.81;
   --expanded-y:  64.444cqw;
 
   z-index:   1;
-  animation: rsc-fan var(--duration) var(--ease) infinite;
+  animation: strc-fan var(--duration) var(--ease) infinite;
 }
 
 /* Each move runs 500ms — --motion-duration-slow — which is 8.333% of the 6s
@@ -110,7 +110,7 @@
    23.333–65  hold expanded    2500ms
    65–73.333  nest back         500ms
    73.333–100 hold collapsed   1600ms                                         */
-@keyframes rsc-fan {
+@keyframes strc-fan {
   0%      { transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s)); }
   15%     { transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s)); }
   23.333% { transform: translateY(var(--expanded-y))  scale(1);                  }
@@ -122,8 +122,8 @@
 /* Reduced motion — settle on the collapsed stack, the shape the feature is
    named for. Same strategy as SheetStackCover: cancel, don't fight. */
 @media (prefers-reduced-motion: reduce) {
-  .rsc-row--2,
-  .rsc-row--3 {
+  .strc-row--2,
+  .strc-row--3 {
     animation: none;
     transform: translateY(var(--collapsed-y)) scale(var(--collapsed-s));
   }

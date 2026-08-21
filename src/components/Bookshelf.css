@@ -213,7 +213,7 @@
   /* Approximates --color-secondary (primary at 60%) but for light text on
      the photo's dark scrim — that token is specifically primary-on-light,
      so it doesn't apply here. Kept local rather than promoted to a new
-     global token, same reasoning as the Sheet/RevealStack covers' palettes. */
+     global token, same reasoning as the Sheet/StackReveal covers' palettes. */
   color:       rgba(255, 255, 255, 0.7);
   white-space: nowrap;
 }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWebHaptics } from 'web-haptics/react';
 import { FeaturePreview } from '../components/FeaturePreview';
 import { SheetStackCover } from '../components/SheetStackCover';
-import { RevealStackCover } from '../components/RevealStackCover';
+import { StackRevealCover } from '../components/StackRevealCover';
 import { FEATURES, TOTAL_FEATURES } from '../data/features';
 import { navigateWithTransition } from '../utils/navigation';
 import { useClickSound } from '../hooks/useClickSound';
@@ -219,7 +219,7 @@ export function Playground({ currentIndex, onNavigate }: PlaygroundProps) {
             featureId={feature.id}
             cover={
               feature.id === 'sheet-stacking' ? <SheetStackCover /> :
-              feature.id === 'reveal-stack'   ? <RevealStackCover /> :
+              feature.id === 'stack-reveal'   ? <StackRevealCover /> :
               undefined
             }
             onNavigate={() => handleFeatureNavigate(feature.id)}

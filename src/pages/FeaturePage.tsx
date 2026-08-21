@@ -4,7 +4,8 @@ import { FEATURES } from '../data/features';
 import { navigateWithTransition, withViewTransition } from '../utils/navigation';
 import { SheetStackingDemo } from '../components/SheetStackingDemo';
 import { CategoryDock, CHARACTER_ITEMS } from '../components/CategoryDock';
-import { RevealStack } from '../components/RevealStack';
+import { StackReveal } from '../components/StackReveal';
+import { StackRevealFan } from '../components/StackRevealFan';
 import { Bookshelf } from '../components/Bookshelf';
 import { PreviewPagination } from '../components/PreviewPagination';
 import './FeaturePage.css';
@@ -81,7 +82,7 @@ function CategoryDockArticle() {
   );
 }
 
-function RevealStackArticle() {
+function StackRevealArticle({ variantIndex }: { variantIndex: number }) {
   return (
     <>
       <p className="feature-page__body">
@@ -93,17 +94,25 @@ function RevealStackArticle() {
         nobody misses it.
       </p>
       <p className="feature-page__body">
-        A reveal stack collapses the queue into a single tappable pile. The
+        A stack reveal collapses the queue into a single tappable pile. The
         next track shows in full so you always know what's coming, with a
-        hint of what follows peeking out behind it. Tap the chevron and the
-        rest fans open, each row settling into place with a small stagger.
-        It reclaims the vertical space a static list would burn, and turns a
-        passive queue into a moment that rewards a little curiosity.
+        hint of what follows peeking out behind it. Tap it and the rest fans
+        open, each row settling into place with a small stagger. It reclaims
+        the vertical space a static list would burn, and turns a passive
+        queue into a moment that rewards a little curiosity.
       </p>
-      <p className="feature-page__hint">
-        <strong>Try it above</strong> — tap the chevron next to <strong>Up next</strong> to
-        fan the queue open, and again to collapse it back into a neat stack.
-      </p>
+      {variantIndex === 1 ? (
+        <p className="feature-page__hint">
+          <strong>Try it above</strong> — tap the stack to fan the queue out
+          over a blurred scrim, then tap anywhere outside it to collapse
+          back into the stack.
+        </p>
+      ) : (
+        <p className="feature-page__hint">
+          <strong>Try it above</strong> — tap the chevron next to <strong>Up next</strong> to
+          fan the queue open, and again to collapse it back into a neat stack.
+        </p>
+      )}
     </>
   );
 }
@@ -150,11 +159,11 @@ function PlaceholderArticle({ subtitle }: { subtitle: string }) {
   return <p className="feature-page__body">{subtitle}</p>;
 }
 
-function getArticleContent(id: string, subtitle: string) {
+function getArticleContent(id: string, subtitle: string, variantIndex: number) {
   switch (id) {
     case 'sheet-stacking': return <SheetStackingArticle />;
     case 'category-dock':  return <CategoryDockArticle />;
-    case 'reveal-stack':   return <RevealStackArticle />;
+    case 'stack-reveal':   return <StackRevealArticle variantIndex={variantIndex} />;
     case 'bookshelf':      return <BookshelfArticle />;
     default:               return <PlaceholderArticle subtitle={subtitle} />;
   }
@@ -170,7 +179,10 @@ function getDemoVariants(id: string): React.ReactNode[] {
       <div className="category-dock-demo"><CategoryDock variant="tile" /></div>,
       <div className="category-dock-demo"><CategoryDock variant="bar" items={CHARACTER_ITEMS} /></div>,
     ];
-    case 'reveal-stack':   return [<div className="reveal-stack-demo"><RevealStack /></div>];
+    case 'stack-reveal':   return [
+      <div className="stack-reveal-demo"><StackReveal /></div>,
+      <div className="stack-reveal-fan-demo"><StackRevealFan /></div>,
+    ];
     case 'bookshelf':      return [
       <div className="bookshelf-demo"><Bookshelf variant="placeholder" /></div>,
       <div className="bookshelf-demo"><Bookshelf variant="photo" /></div>,
@@ -189,7 +201,7 @@ type PreviewSize = 'compact' | 'wide' | 'bare';
 const PREVIEW_SIZE: Record<string, PreviewSize> = {
   'sheet-stacking': 'compact',
   'category-dock':  'wide',
-  'reveal-stack':   'wide',
+  'stack-reveal':   'wide',
   'bookshelf':      'bare',
 };
 function getPreviewSize(id: string): PreviewSize {
@@ -289,7 +301,7 @@ export function FeaturePage({ onTitleVisibilityChange }: FeaturePageProps) {
         )}
 
         <div className="feature-page__body-wrap">
-          {getArticleContent(feature.id, feature.subtitle)}
+          {getArticleContent(feature.id, feature.subtitle, variantIndex)}
         </div>
 
       </article>

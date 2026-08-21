@@ -39,7 +39,7 @@ export function Header({ onDesignSystemActivate, onLogoClick, onMenuClick, onNex
         </div>
 
         {/* Logo and compact title occupy the same slot, crossfading between
-            them — mirrors Reveal Stack's chevron icon swap (two elements
+            them — mirrors Stack Reveal's chevron icon swap (two elements
             stay mounted, opacity/scale/blur toggles via .is-visible/
             .is-hidden) rather than mounting/unmounting either one, which
             would skip the transition entirely. */}

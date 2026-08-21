@@ -1,0 +1,177 @@
+/* ─── Stack reveal fan ───────────────────────────────────────────────────────
+   Second variant of the Stack Reveal feature — see StackRevealFan.tsx for the
+   full interaction model. Sizes come from inline styles (single source of
+   truth in the component); this file owns visual treatment only.
+
+   .stack-reveal-fan__cover (the always-visible trigger's cover face) and
+   .stack-reveal-fan__cover-tile (the same face inside the portaled overlay)
+   are visually identical — combined below rather than duplicated. */
+
+.stack-reveal-fan {
+  display: flex;
+}
+
+/* ─── Trigger — always inline, shows the collapsed cascade ───────────────── */
+.stack-reveal-fan__trigger {
+  position:   relative;
+  display:    block;
+  padding:    0;
+  border:     none;
+  background: none;
+  cursor:     pointer;
+}
+
+.stack-reveal-fan__peek {
+  position:      absolute;
+  top:           0;
+  left:          0;
+  border-radius: var(--radius-tile);
+  background:     var(--surface-raised1-bg);
+  border:         1px solid var(--surface-raised1-border);
+  box-shadow:
+    inset 0 1px 0 var(--surface-raised1-inset-top),
+    inset 1px 0 0 var(--surface-raised1-inset-left),
+    var(--surface-raised1-shadow);
+}
+
+/* ─── Cover face — shared between the trigger and the overlay's anchor ───── */
+.stack-reveal-fan__cover,
+.stack-reveal-fan__cover-tile {
+  --bloom-violet:  #8b7bd8;   /* mirrors StackRevealCover's palette — same feature, same accent */
+  --bloom-magenta: #d45bb0;
+  --bg-base:       #1c1c24;
+
+  position:         absolute;
+  top:              0;
+  left:             0;
+  display:          flex;
+  align-items:      flex-end;
+  overflow:         hidden;
+  border-radius:    var(--radius-tile);
+  box-shadow:       var(--shadow-surface);
+  background:
+    radial-gradient(circle at 18% 78%, var(--bloom-magenta) 0%, transparent 55%),
+    radial-gradient(circle at 72% 18%, var(--bloom-violet)  0%, transparent 60%),
+    var(--bg-base);
+}
+
+.stack-reveal-fan__cover-label {
+  padding:          var(--space-4);
+  font-family:      var(--font-family-display);
+  font-size:        var(--font-size-xl);
+  font-weight:      var(--font-weight-medium);
+  line-height:      var(--line-height-tight);
+  letter-spacing:   var(--letter-spacing-tight);
+  color:            var(--color-white);
+  text-transform:   uppercase;
+}
+
+/* ─── Overlay — portaled to document.body ─────────────────────────────────── */
+.stack-reveal-fan__overlay {
+  position:        fixed;
+  inset:           0;
+  z-index:         400;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding-inline:  var(--space-6);
+}
+
+.stack-reveal-fan__scrim {
+  position:   absolute;
+  inset:      0;
+  background: rgba(230, 232, 230, 0.55);   /* --color-neutral wash — light theme, not NavMenu's dark inversion */
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter:         blur(20px);
+  cursor:     pointer;
+  animation:  stack-reveal-fan-scrim-in var(--motion-duration-base) var(--motion-easing-enter) both;
+}
+
+.stack-reveal-fan__overlay.is-closing .stack-reveal-fan__scrim {
+  animation: stack-reveal-fan-scrim-out var(--motion-duration-base) var(--motion-easing-exit) both;
+}
+
+/* Scrolls on narrow viewports, where the fanned row is wider than the
+   screen — .row-inner below is the fixed-width cascade coordinate space;
+   this element is just its (possibly-constrained) viewport. */
+.stack-reveal-fan__row {
+  position:  relative;
+  z-index:   1;
+  max-width: 100%;
+  overflow-x: auto;
+  outline:   none;
+}
+
+.stack-reveal-fan__row-inner {
+  position: relative;
+}
+
+.stack-reveal-fan__tile {
+  position:         absolute;
+  top:              0;
+  left:             0;
+  display:          flex;
+  flex-direction:   column;
+  gap:              var(--space-3);
+  transform-origin: center left;   /* fan grows rightward from a fixed left edge — the horizontal analogue of StackReveal's "top center" */
+  transition:       transform var(--motion-duration-base) var(--motion-easing-spring);
+  will-change:      transform;
+}
+
+.stack-reveal-fan__art {
+  border-radius: var(--radius-tile);
+  background:    var(--color-muted);   /* placeholder — real artwork out of scope, see StackReveal's own thumb */
+}
+
+.stack-reveal-fan__text {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-1);
+  min-width:      0;
+}
+
+.stack-reveal-fan__track-title {
+  font-size:     var(--font-size-sm);
+  font-weight:   var(--font-weight-semibold);
+  color:         var(--color-primary);
+  line-height:   var(--line-height-snug);
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+.stack-reveal-fan__artist {
+  font-size:     var(--font-size-sm);
+  font-weight:   var(--font-weight-regular);
+  color:         var(--color-secondary);
+  line-height:   var(--line-height-snug);
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+@keyframes stack-reveal-fan-scrim-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes stack-reveal-fan-scrim-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* Reduced motion — the fan still opens/closes (state toggles regardless),
+   tiles just jump instead of animating; scrim keeps a quick linear fade
+   rather than an instant snap, matching Sheet/NavMenu's own strategy. */
+@media (prefers-reduced-motion: reduce) {
+  .stack-reveal-fan__tile {
+    transition: none;
+  }
+  .stack-reveal-fan__scrim {
+    animation: stack-reveal-fan-scrim-in var(--motion-duration-fast) linear both;
+  }
+  .stack-reveal-fan__overlay.is-closing .stack-reveal-fan__scrim {
+    animation: stack-reveal-fan-scrim-out var(--motion-duration-fast) linear both;
+  }
+}
+
+/* ─── Feature-page demo frame ──────────────────────────────────────────────── */
+.stack-reveal-fan-demo {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         var(--space-8) var(--space-6);
+}

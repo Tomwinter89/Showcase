@@ -114,7 +114,7 @@
 }
 
 /* The demo frame is the well's only child. Let it fill the well so inner
-   max-widths (e.g. the reveal stack's 420px) resolve against the full span
+   max-widths (e.g. the stack reveal's 420px) resolve against the full span
    rather than collapsing to shrink-to-fit as a flex item would by default. */
 .feature-page__preview > * {
   flex:      1;

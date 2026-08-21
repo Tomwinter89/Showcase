@@ -29,7 +29,7 @@
      has fully finished fading out — a sequential swap, not a simultaneous
      cross-dissolve. Two dissimilar shapes (a logomark vs. a text string)
      both partway visible at once reads as illegible overlap in a way two
-     matched icons swapping (Reveal Stack's chevron) doesn't. */
+     matched icons swapping (Stack Reveal's chevron) doesn't. */
   transition: opacity var(--motion-duration-fast) var(--motion-easing-standard) var(--motion-duration-fast);
 }
 

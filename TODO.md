@@ -4,7 +4,7 @@ Running backlog for the portfolio. Check items off as they land, add new ones as
 
 ## Content
 
-- [ ] Rewrite placeholder article copy — Category Dock, Reveal Stack, Bookshelf (Sheet Stacking's is the only one considered finished)
+- [ ] Rewrite placeholder article copy — Category Dock, Stack Reveal, Bookshelf (Sheet Stacking's is the only one considered finished)
 - [ ] Real images for Sheet Stacking's cart line items (currently no imagery, just copy)
 
 ## Features / interaction
